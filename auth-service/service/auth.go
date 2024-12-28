@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
-	"gorm.io/gorm"
 	pb "project/auth-service/proto"
+	"project/auth-service/repository"
 )
 
 type AuthService struct {
-	Db gorm.DB
+	Repo repository.Repository
 	pb.UnimplementedAuthServiceServer
 }
 
