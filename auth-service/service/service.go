@@ -8,8 +8,11 @@ import (
 )
 
 type Service struct {
+	Auth *AuthService
 }
 
 func NewService(repo repository.Repository, appConfig config.Config, log *zap.Logger) Service {
-	return Service{}
+	return Service{
+		Auth: &AuthService{Repo: repo},
+	}
 }

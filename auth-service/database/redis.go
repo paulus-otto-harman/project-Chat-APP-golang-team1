@@ -36,7 +36,7 @@ func NewCacher(cfg config.Config, expiry int) Cacher {
 	}
 
 	// Menampilkan pesan sukses koneksi
-	fmt.Println("success connected to Redis")
+	log.Println("success connected to Redis")
 
 	return cache
 }
