@@ -1,0 +1,41 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    ports:
+      - "${PORT:-8181}:${PORT:-8181}"
+#    env_file:
+#      - ./api-gateway/.env
+    depends_on:
+      - auth-service
+#      - chat-service
+#      - user-service
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    ports:
+      - "${PORT:-51151}:${PORT:-51151}"
+    env_file:
+      - ./auth-service/.env
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+
+#  chat-service:
+#    build:
+#      context: ./chat-service
+#    ports:
+#      - "${PORT:-51152}:${PORT:-51152}"
+#    env_file:
+#      - ./chat-service/.env
+#
+#  user-service:
+#    build:
+#      context: ./user-service
+#    ports:
+#      - "${PORT:-51153}:${PORT:-51153}"
+#    env_file:
+#      - ./user-service/.env
+

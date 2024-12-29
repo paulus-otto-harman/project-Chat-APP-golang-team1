@@ -17,7 +17,7 @@ func main() {
 	}
 
 	var listener net.Listener
-	if listener, err = net.Listen("tcp", ":50051"); err != nil {
+	if listener, err = net.Listen("tcp", "0.0.0.0:51151"); err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 

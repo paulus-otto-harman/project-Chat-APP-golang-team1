@@ -4,6 +4,8 @@ import "github.com/gin-gonic/gin"
 
 func main() {
 	router := gin.Default()
-
-	router.Run(":8080")
+	router.GET("test", func(c *gin.Context) {
+		c.JSON(200, gin.H{"hello": "world"})
+	})
+	router.Run("0.0.0.0:8181")
 }
