@@ -2,6 +2,7 @@ package database
 
 import (
 	"gorm.io/gorm"
+	"project/auth-service/model"
 )
 
 func Migrate(db *gorm.DB) error {
@@ -24,14 +25,12 @@ func Migrate(db *gorm.DB) error {
 
 func autoMigrates(db *gorm.DB) error {
 	return db.AutoMigrate(
-
+		&model.User{},
 	)
 }
 
 func dropTables(db *gorm.DB) error {
-	return db.Migrator().DropTable(
-
-	)
+	return db.Migrator().DropTable()
 }
 
 func setupJoinTables(db *gorm.DB) error {
@@ -45,5 +44,3 @@ func createViews(db *gorm.DB) error {
 
 	return err
 }
-
-

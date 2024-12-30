@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -17,7 +18,7 @@ func main() {
 	}
 
 	var listener net.Listener
-	if listener, err = net.Listen("tcp", ":50051"); err != nil {
+	if listener, err = net.Listen("tcp", fmt.Sprintf("%s:%s", ctx.Cfg.GrpcIp, ctx.Cfg.GrpcPort)); err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
