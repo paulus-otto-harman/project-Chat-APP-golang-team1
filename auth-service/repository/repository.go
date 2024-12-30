@@ -9,8 +9,11 @@ import (
 )
 
 type Repository struct {
+	Auth Auth
 }
 
 func NewRepository(db *gorm.DB, cacher database.Cacher, config config.Config, log *zap.Logger) Repository {
-	return Repository{}
+	return Repository{
+		Auth: Auth{Db: db},
+	}
 }

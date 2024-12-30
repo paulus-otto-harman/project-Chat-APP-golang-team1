@@ -10,7 +10,7 @@ type Config struct {
 	AppDebug        bool
 	DB              DatabaseConfig
 	RedisConfig     RedisConfig
-	ServerPort      string
+	GrpcPort        string
 	ShutdownTimeout int
 }
 
@@ -57,7 +57,7 @@ func LoadConfig() (Config, error) {
 		DB: loadDatabaseConfig(),
 
 		AppDebug:        viper.GetBool("APP_DEBUG"),
-		ServerPort:      viper.GetString("SERVER_PORT"),
+		GrpcPort:        viper.GetString("GRPC_PORT"),
 		ShutdownTimeout: viper.GetInt("SHUTDOWN_TIMEOUT"),
 
 		RedisConfig: loadRedisConfig(),

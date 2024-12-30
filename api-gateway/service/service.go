@@ -1,18 +1,15 @@
 package service
 
 import (
-	"project/auth-service/config"
-	"project/auth-service/repository"
+	"project/api-gateway/config"
+	"project/api-gateway/repository"
 
 	"go.uber.org/zap"
 )
 
 type Service struct {
-	Auth *AuthService
 }
 
 func NewService(repo repository.Repository, appConfig config.Config, log *zap.Logger) Service {
-	return Service{
-		Auth: &AuthService{Repo: repo},
-	}
+	return Service{}
 }

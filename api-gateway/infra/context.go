@@ -1,13 +1,12 @@
 package infra
 
 import (
-	"project/auth-service/config"
-	"project/auth-service/database"
-	"project/auth-service/log"
-	"project/auth-service/repository"
-	"project/auth-service/service"
-
 	"go.uber.org/zap"
+	"project/api-gateway/config"
+	"project/api-gateway/database"
+	"project/api-gateway/log"
+	"project/api-gateway/repository"
+	"project/api-gateway/service"
 )
 
 type ServiceContext struct {
@@ -35,19 +34,14 @@ func NewServiceContext() (*ServiceContext, error) {
 		return handlerError(err)
 	}
 
-	// instance database
-	db, err := database.ConnectDB(appConfig)
-	if err != nil {
-		return handlerError(err)
-	}
-
 	rdb := database.NewCacher(appConfig, 60*60)
 
 	// instance repository
-	repo := repository.NewRepository(db, rdb, appConfig, logger)
+	repo := repository.NewRepository(rdb, appConfig, logger)
 
 	// instance service
 	services := service.NewService(repo, appConfig, logger)
 
-	return &ServiceContext{Cacher: rdb, Cfg: appConfig, Svc: &services, Log: logger}, nil
+	//return &ServiceContext{Cacher: rdb, Cfg: appConfig, Svc: &services, Log: logger}, nil
+	return &ServiceContext{Cfg: appConfig, Svc: &services, Log: logger}, nil
 }

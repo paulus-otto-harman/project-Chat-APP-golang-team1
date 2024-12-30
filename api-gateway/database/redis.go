@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"project/auth-service/config"
+	"project/api-gateway/config"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -19,7 +19,7 @@ type Cacher struct {
 // Addr:     url,
 func newRedisClient(url, password string, dbIndex int) *redis.Client {
 	return redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     "0.0.0.0:6379",
 		Password: password,
 		DB:       dbIndex,
 	})
