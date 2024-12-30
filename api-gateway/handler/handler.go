@@ -15,7 +15,7 @@ type Handler struct {
 
 func NewHandler(service service.Service, logger *zap.Logger, rdb database.Cacher) *Handler {
 	return &Handler{
-		AuthHandler: *NewAuthController(service.Auth, logger, rdb),
+		AuthHandler: *NewAuthController(service, logger, rdb),
 	}
 }
 

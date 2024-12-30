@@ -6,11 +6,13 @@ import (
 )
 
 type Service struct {
-	Auth AuthService
+	Auth  AuthService
+	Email EmailService
 }
 
 func NewService(appConfig config.Config, log *zap.Logger) Service {
 	return Service{
-		Auth: NewAuthService(log),
+		Auth:  NewAuthService(log),
+		Email: NewEmailService(appConfig.Email, log),
 	}
 }

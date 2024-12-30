@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	AppDebug        bool
+	Email           EmailConfig
 	RedisConfig     RedisConfig
 	ServerIp        string
 	ServerPort      string
@@ -17,6 +18,12 @@ type RedisConfig struct {
 	Url      string
 	Password string
 	Prefix   string
+}
+
+type EmailConfig struct {
+	ApiKey    string
+	FromName  string
+	FromEmail string
 }
 
 func LoadConfig() (Config, error) {
@@ -45,6 +52,7 @@ func LoadConfig() (Config, error) {
 		ServerPort:      viper.GetString("SERVER_PORT"),
 		ShutdownTimeout: viper.GetInt("SHUTDOWN_TIMEOUT"),
 
+		Email:       loadEmailConfig(),
 		RedisConfig: loadRedisConfig(),
 	}
 	return config, nil
@@ -55,6 +63,14 @@ func loadRedisConfig() RedisConfig {
 		Url:      viper.GetString("REDIS_URL"),
 		Password: viper.GetString("REDIS_PASSWORD"),
 		Prefix:   viper.GetString("REDIS_PREFIX"),
+	}
+}
+
+func loadEmailConfig() EmailConfig {
+	return EmailConfig{
+		ApiKey:    viper.GetString("MAILERSEND_API_KEY"),
+		FromName:  viper.GetString("MAILERSEND_FROM_NAME"),
+		FromEmail: viper.GetString("MAILERSEND_FROM_EMAIL"),
 	}
 }
 
