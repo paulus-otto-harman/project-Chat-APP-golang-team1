@@ -60,6 +60,6 @@ func loadRedisConfig() RedisConfig {
 
 func setDefaultValues() {
 	viper.SetDefault("APP_DEBUG", true)
-	viper.SetDefault("SERVER_PORT", ":8181")
+	viper.SetDefault("SERVER_PORT", "8181")
 	viper.SetDefault("SHUTDOWN_TIMEOUT", 5)
 }
