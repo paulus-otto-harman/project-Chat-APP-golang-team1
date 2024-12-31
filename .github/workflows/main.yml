@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    environment: dev
+    environment: lumos
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
