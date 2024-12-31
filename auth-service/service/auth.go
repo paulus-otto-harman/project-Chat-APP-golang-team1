@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"log"
+	"project/auth-service/model"
 	pb "project/auth-service/proto"
 	"project/auth-service/repository"
 )
@@ -18,8 +18,10 @@ func (a *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 }
 
 func (a *AuthService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	x := a.Repo.Auth.Db.Error
-	log.Println(x)
+	if err := a.Repo.Auth.Create(&model.User{Username: req.Username, Password: req.Password}); err != nil {
+		return nil, err
+	}
+
 	return &pb.RegisterResponse{Otp: "1234"}, nil
 }
 
