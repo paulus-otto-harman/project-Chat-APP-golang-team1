@@ -17,7 +17,7 @@ services:
 #      - user-service
 
   auth-service:
-    platform: "linux/amd64"
+#    platform: "linux/amd64"
     build:
       context: .
       dockerfile: ./auth-service/Dockerfile
