@@ -20,6 +20,10 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	if err = createCompositeIndexes(db); err != nil {
+		return err
+	}
+
 	return createViews(db)
 }
 
@@ -30,7 +34,9 @@ func autoMigrates(db *gorm.DB) error {
 }
 
 func dropTables(db *gorm.DB) error {
-	return db.Migrator().DropTable()
+	return db.Migrator().DropTable(
+		&model.User{},
+	)
 }
 
 func setupJoinTables(db *gorm.DB) error {
@@ -42,5 +48,13 @@ func setupJoinTables(db *gorm.DB) error {
 func createViews(db *gorm.DB) error {
 	var err error
 
+	return err
+}
+
+func createCompositeIndexes(db *gorm.DB) error {
+	var err error
+	if err = db.Exec(model.UserEmailUniqueIndex()).Error; err != nil {
+		return err
+	}
 	return err
 }

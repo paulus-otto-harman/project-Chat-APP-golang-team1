@@ -11,8 +11,7 @@ service AuthService {
 }
 
 message LoginRequest {
-  string username = 1;
-  string password = 2;
+  string email = 1;
 }
 
 message LoginResponse {
@@ -20,8 +19,7 @@ message LoginResponse {
 }
 
 message RegisterRequest {
-  string username = 1;
-  string password = 2;
+  string email = 1;
 }
 
 message RegisterResponse {
@@ -29,15 +27,10 @@ message RegisterResponse {
   string otp = 2;
 }
 
-message User {
-  string username = 1;
-  string password = 2;
-}
-
 message ValidateTokenRequest {
   string token = 1;
 }
 
 message ValidateTokenResponse {
-  string username = 1;
+  string email = 1;
 }

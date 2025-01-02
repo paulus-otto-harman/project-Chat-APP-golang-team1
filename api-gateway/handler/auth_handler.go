@@ -34,14 +34,14 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	}
 
 	emailData := EmailData{ID: uuid.New(), OTP: res.Otp}
-	_, err = ctrl.service.Email.Send("tes@mailinator.com", "Chateo OTP", "otp", emailData)
+	_, err = ctrl.service.Email.Send(user.Email, "Chateo OTP", "otp", emailData)
 	if err != nil {
 		ctrl.logger.Error("failed to send email", zap.Error(err))
 		BadResponse(c, "failed to send email", http.StatusInternalServerError)
 		return
 	}
 
-	GoodResponseWithData(c, "registration success. otp sent", http.StatusOK, res)
+	GoodResponseWithData(c, "registration success. otp sent", http.StatusOK, nil)
 }
 
 type EmailData struct {

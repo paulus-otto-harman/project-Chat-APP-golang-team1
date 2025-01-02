@@ -29,7 +29,7 @@ func (s *authService) Register(user model.User) (*pbAuth.RegisterResponse, error
 
 	authClient := pbAuth.NewAuthServiceClient(authConn)
 
-	req := &pbAuth.RegisterRequest{Username: user}
+	req := &pbAuth.RegisterRequest{Email: user.Email}
 	res, err := authClient.Register(context.Background(), req)
 	if err != nil {
 		return nil, nil
