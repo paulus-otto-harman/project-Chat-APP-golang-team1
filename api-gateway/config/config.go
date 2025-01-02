@@ -6,17 +6,31 @@ import (
 )
 
 type Config struct {
-	AppDebug        bool
-	RedisConfig     RedisConfig
-	ServerIp        string
-	ServerPort      string
-	ShutdownTimeout int
+	AppDebug           bool
+	Email              EmailConfig
+	RedisConfig        RedisConfig
+	MicroserviceConfig MicroserviceConfig
+	ServerIp           string
+	ServerPort         string
+	ShutdownTimeout    int
 }
 
 type RedisConfig struct {
 	Url      string
 	Password string
 	Prefix   string
+}
+
+type EmailConfig struct {
+	ApiKey    string
+	FromName  string
+	FromEmail string
+}
+
+type MicroserviceConfig struct {
+	Auth string
+	User string
+	Chat string
 }
 
 func LoadConfig() (Config, error) {
@@ -45,7 +59,9 @@ func LoadConfig() (Config, error) {
 		ServerPort:      viper.GetString("SERVER_PORT"),
 		ShutdownTimeout: viper.GetInt("SHUTDOWN_TIMEOUT"),
 
-		RedisConfig: loadRedisConfig(),
+		Email:              loadEmailConfig(),
+		RedisConfig:        loadRedisConfig(),
+		MicroserviceConfig: loadMicroserviceConfig(),
 	}
 	return config, nil
 }
@@ -58,8 +74,22 @@ func loadRedisConfig() RedisConfig {
 	}
 }
 
+func loadEmailConfig() EmailConfig {
+	return EmailConfig{
+		ApiKey:    viper.GetString("MAILERSEND_API_KEY"),
+		FromName:  viper.GetString("MAILERSEND_FROM_NAME"),
+		FromEmail: viper.GetString("MAILERSEND_FROM_EMAIL"),
+	}
+}
+
+func loadMicroserviceConfig() MicroserviceConfig {
+	return MicroserviceConfig{
+		Auth: viper.GetString("AUTH_SERVICE_IP") + ":" + viper.GetString("AUTH_SERVICE_PORT"),
+	}
+}
+
 func setDefaultValues() {
 	viper.SetDefault("APP_DEBUG", true)
-	viper.SetDefault("SERVER_PORT", ":8181")
+	viper.SetDefault("SERVER_PORT", "8181")
 	viper.SetDefault("SHUTDOWN_TIMEOUT", 5)
 }

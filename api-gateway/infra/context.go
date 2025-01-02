@@ -4,14 +4,15 @@ import (
 	"go.uber.org/zap"
 	"project/api-gateway/config"
 	"project/api-gateway/database"
+	"project/api-gateway/handler"
 	"project/api-gateway/log"
-	"project/api-gateway/repository"
 	"project/api-gateway/service"
 )
 
 type ServiceContext struct {
 	Cacher database.Cacher
 	Cfg    config.Config
+	Ctl    handler.Handler
 	Log    *zap.Logger
 	Svc    *service.Service
 }
@@ -36,12 +37,12 @@ func NewServiceContext() (*ServiceContext, error) {
 
 	rdb := database.NewCacher(appConfig, 60*60)
 
-	// instance repository
-	repo := repository.NewRepository(rdb, appConfig, logger)
-
 	// instance service
-	services := service.NewService(repo, appConfig, logger)
+	services := service.NewService(appConfig, logger)
+
+	// instance controller
+	Ctl := handler.NewHandler(services, logger, rdb)
 
 	//return &ServiceContext{Cacher: rdb, Cfg: appConfig, Svc: &services, Log: logger}, nil
-	return &ServiceContext{Cfg: appConfig, Svc: &services, Log: logger}, nil
+	return &ServiceContext{Cfg: appConfig, Ctl: *Ctl, Svc: &services, Log: logger}, nil
 }

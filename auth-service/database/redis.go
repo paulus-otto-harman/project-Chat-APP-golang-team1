@@ -19,7 +19,7 @@ type Cacher struct {
 // Addr:     url,
 func newRedisClient(url, password string, dbIndex int) *redis.Client {
 	return redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     url,
 		Password: password,
 		DB:       dbIndex,
 	})
