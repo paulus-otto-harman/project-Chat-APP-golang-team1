@@ -44,6 +44,30 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	GoodResponseWithData(c, "registration success. otp sent", http.StatusOK, nil)
 }
 
+func (ctrl *AuthController) Login(c *gin.Context) {
+	var user model.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		BadResponse(c, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	res, err := ctrl.service.Auth.Login(user)
+	if err != nil {
+		BadResponse(c, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	emailData := EmailData{ID: uuid.New(), OTP: res.Otp}
+	_, err = ctrl.service.Email.Send(user.Email, "Chateo OTP", "otp", emailData)
+	if err != nil {
+		ctrl.logger.Error("failed to send email", zap.Error(err))
+		BadResponse(c, "failed to send email", http.StatusInternalServerError)
+		return
+	}
+
+	GoodResponseWithData(c, "login success. otp sent", http.StatusOK, nil)
+}
+
 type EmailData struct {
 	ID  uuid.UUID
 	OTP string

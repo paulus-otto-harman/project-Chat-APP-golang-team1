@@ -5,17 +5,22 @@ import (
 	"go.uber.org/zap"
 	"project/api-gateway/database"
 	"project/api-gateway/model"
-	//"project/infra/jwt"
 	"project/api-gateway/service"
 )
 
 type Handler struct {
-	AuthHandler AuthController
+	AuthHandler    AuthController
+	ContactHandler ContactController
+	OtpHandler     OtpController
+	UserHandler    UserController
 }
 
 func NewHandler(service service.Service, logger *zap.Logger, rdb database.Cacher) *Handler {
 	return &Handler{
-		AuthHandler: *NewAuthController(service, logger, rdb),
+		AuthHandler:    *NewAuthController(service, logger, rdb),
+		ContactHandler: *NewContactController(service, logger),
+		OtpHandler:     *NewOtpController(service, logger),
+		UserHandler:    *NewUserController(service, logger),
 	}
 }
 
