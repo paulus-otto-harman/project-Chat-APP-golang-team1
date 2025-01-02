@@ -12,7 +12,7 @@ type Service struct {
 
 func NewService(appConfig config.Config, log *zap.Logger) Service {
 	return Service{
-		Auth:  NewAuthService(log),
+		Auth:  NewAuthService(appConfig.MicroserviceConfig.Auth, log),
 		Email: NewEmailService(appConfig.Email, log),
 	}
 }

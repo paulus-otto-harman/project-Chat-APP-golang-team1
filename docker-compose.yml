@@ -1,6 +1,6 @@
 services:
   api-gateway:
-    platform: "linux/amd64"
+#    platform: "linux/amd64"
     build:
       context: .
       dockerfile: ./api-gateway/Dockerfile
@@ -9,8 +9,9 @@ services:
       - "${SERVER_PORT:-8181}:${SERVER_PORT:-8181}"
     env_file:
       - api-gateway/.env
-    extra_hosts:
-      - "host.docker.internal:0.0.0.0"
+#    network_mode: host
+#    extra_hosts:
+#      - "host.docker.internal:0.0.0.0"
     depends_on:
       - auth-service
 #      - chat-service
@@ -26,8 +27,9 @@ services:
       - "${GRPC_PORT:-51151}:${GRPC_PORT:-51151}"
     env_file:
       - auth-service/.env
-    extra_hosts:
-      - "host.docker.internal:0.0.0.0"
+#    network_mode: host
+#    extra_hosts:
+#      - "host.docker.internal:0.0.0.0"
 
 #  chat-service:
 #    build:
