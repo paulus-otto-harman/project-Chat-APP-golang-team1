@@ -12,14 +12,18 @@ type AuthService struct {
 	pb.UnimplementedAuthServiceServer
 }
 
+func NewAuthService(repo repository.Repository) *AuthService {
+	return &AuthService{repo: repo}
+}
+
 func (s *AuthService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	if err := s.repo.Auth.Create(&model.User{Username: req.Username, Password: req.Password}); err != nil {
+	if err := s.repo.Auth.Create(&model.User{Email: req.Email}); err != nil {
 		return nil, err
 	}
 
 	s.repo.Otp.Create()
 
-	return &pb.RegisterResponse{Otp: "1234"}, nil
+	return &pb.RegisterResponse{Otp: "4321"}, nil
 }
 
 func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
@@ -29,5 +33,5 @@ func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 
 func (s *AuthService) ValidateToken(ctx context.Context, req *pb.ValidateTokenRequest) (*pb.ValidateTokenResponse, error) {
 
-	return &pb.ValidateTokenResponse{Username: "test@mail.com"}, nil
+	return &pb.ValidateTokenResponse{Email: "test@mail.com"}, nil
 }

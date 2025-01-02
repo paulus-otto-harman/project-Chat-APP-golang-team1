@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func NewConnection(clientTarget string) *grpc.ClientConn {
+func MustConnect(clientTarget string) *grpc.ClientConn {
 	conn, err := grpc.NewClient(clientTarget, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("can't init grpc client %w", err)

@@ -18,6 +18,23 @@ func NewRoutes(ctx infra.ServiceContext) {
 	r := gin.Default()
 
 	r.POST("/register", ctx.Ctl.AuthHandler.Register)
+	r.POST("/login", ctx.Ctl.AuthHandler.Login)
+	r.PUT("/otp/:id", ctx.Ctl.OtpHandler.Validate)
+
+	r.Use(ctx.Middleware.Auth())
+	r.PUT("/profile", ctx.Ctl.UserHandler.Update)
+	contactRoutes := r.Group("/user/contacts")
+	{
+		contactRoutes.POST("/", ctx.Ctl.ContactHandler.Add)
+		contactRoutes.DELETE("/", ctx.Ctl.ContactHandler.Remove)
+	}
+
+	chatRoutes := r.Group("/user/chat")
+	{
+		chatRoutes.GET("/messages", nil)
+		chatRoutes.POST("/messages", nil)
+		chatRoutes.PUT("/status", nil)
+	}
 
 	gracefulShutdown(ctx, r.Handler())
 }

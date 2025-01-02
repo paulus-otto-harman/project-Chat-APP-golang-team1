@@ -10,7 +10,7 @@ import (
 
 type AuthService interface {
 	Register(user model.User) (*pbAuth.RegisterResponse, error)
-	Login(ctx context.Context, req *pbAuth.LoginRequest) (*pbAuth.LoginResponse, error)
+	Login(user model.User) (*pbAuth.LoginResponse, error)
 	CreateOtp()
 	ValidateOtp() (*string, error)
 }
@@ -24,12 +24,12 @@ func NewAuthService(serviceUrl string, log *zap.Logger) AuthService {
 }
 
 func (s *authService) Register(user model.User) (*pbAuth.RegisterResponse, error) {
-	authConn := helper.NewConnection(s.serviceUrl)
+	authConn := helper.MustConnect(s.serviceUrl)
 	defer authConn.Close()
 
 	authClient := pbAuth.NewAuthServiceClient(authConn)
 
-	req := &pbAuth.RegisterRequest{Username: user}
+	req := &pbAuth.RegisterRequest{Email: user.Email}
 	res, err := authClient.Register(context.Background(), req)
 	if err != nil {
 		return nil, nil
@@ -38,9 +38,19 @@ func (s *authService) Register(user model.User) (*pbAuth.RegisterResponse, error
 	return res, nil
 }
 
-func (s *authService) Login(ctx context.Context, req *pbAuth.LoginRequest) (*pbAuth.LoginResponse, error) {
-	//TODO implement me
-	return nil, nil
+func (s *authService) Login(user model.User) (*pbAuth.LoginResponse, error) {
+	authConn := helper.MustConnect(s.serviceUrl)
+	defer authConn.Close()
+
+	authClient := pbAuth.NewAuthServiceClient(authConn)
+
+	req := &pbAuth.LoginRequest{Email: user.Email}
+	res, err := authClient.Login(context.Background(), req)
+	if err != nil {
+		return nil, nil
+	}
+
+	return res, nil
 }
 
 func (s *authService) CreateOtp() {

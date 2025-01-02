@@ -13,3 +13,5 @@ type OtpRepository struct {
 func NewOtpRepository(db *gorm.DB, log *zap.Logger) *OtpRepository {
 	return &OtpRepository{db, log}
 }
+
+func (s *OtpRepository) Create() {}
