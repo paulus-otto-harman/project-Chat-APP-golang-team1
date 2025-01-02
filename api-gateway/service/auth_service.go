@@ -4,11 +4,12 @@ import (
 	"context"
 	"go.uber.org/zap"
 	"project/api-gateway/helper"
+	"project/api-gateway/model"
 	pbAuth "project/auth-service/proto"
 )
 
 type AuthService interface {
-	Register(ctx context.Context, req *pbAuth.RegisterRequest) (*pbAuth.RegisterResponse, error)
+	Register(user model.User) (*pbAuth.RegisterResponse, error)
 	Login(ctx context.Context, req *pbAuth.LoginRequest) (*pbAuth.LoginResponse, error)
 	CreateOtp()
 	ValidateOtp() (*string, error)
@@ -22,12 +23,14 @@ func NewAuthService(serviceUrl string, log *zap.Logger) AuthService {
 	return &authService{serviceUrl, log}
 }
 
-func (s *authService) Register(ctx context.Context, req *pbAuth.RegisterRequest) (*pbAuth.RegisterResponse, error) {
+func (s *authService) Register(user model.User) (*pbAuth.RegisterResponse, error) {
 	authConn := helper.NewConnection(s.serviceUrl)
 	defer authConn.Close()
 
 	authClient := pbAuth.NewAuthServiceClient(authConn)
-	res, err := authClient.Register(ctx, req)
+
+	req := &pbAuth.RegisterRequest{Username: user}
+	res, err := authClient.Register(context.Background(), req)
 	if err != nil {
 		return nil, nil
 	}

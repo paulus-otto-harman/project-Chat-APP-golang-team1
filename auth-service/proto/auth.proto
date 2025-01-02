@@ -25,7 +25,8 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
-  string otp = 1;
+  string id = 1;
+  string otp = 2;
 }
 
 message User {
