@@ -3,33 +3,52 @@ package service
 import (
 	"context"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"log"
+	"project/api-gateway/helper"
+	"project/api-gateway/model"
 	pbAuth "project/auth-service/proto"
 )
 
 type AuthService interface {
-	Register(ctx context.Context, req *pbAuth.RegisterRequest) (*pbAuth.RegisterResponse, error)
+	Register(user model.User) (*pbAuth.RegisterResponse, error)
+	Login(ctx context.Context, req *pbAuth.LoginRequest) (*pbAuth.LoginResponse, error)
+	CreateOtp()
+	ValidateOtp() (*string, error)
 }
 type authService struct {
-	log *zap.Logger
+	serviceUrl string
+	log        *zap.Logger
 }
 
-func NewAuthService(log *zap.Logger) AuthService {
-	return &authService{log: log}
+func NewAuthService(serviceUrl string, log *zap.Logger) AuthService {
+	return &authService{serviceUrl, log}
 }
 
-func (s *authService) Register(ctx context.Context, req *pbAuth.RegisterRequest) (*pbAuth.RegisterResponse, error) {
-	authClient := makeAuthClient()
-	return authClient.Register(ctx, req)
-}
+func (s *authService) Register(user model.User) (*pbAuth.RegisterResponse, error) {
+	authConn := helper.NewConnection(s.serviceUrl)
+	defer authConn.Close()
 
-func makeAuthClient() pbAuth.AuthServiceClient {
-	authConn, err := grpc.NewClient("localhost:51151", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	authClient := pbAuth.NewAuthServiceClient(authConn)
+
+	req := &pbAuth.RegisterRequest{Username: user}
+	res, err := authClient.Register(context.Background(), req)
 	if err != nil {
-		log.Fatal("can't init auth grpc client %w", err)
+		return nil, nil
 	}
-	//defer authConn.Close()
-	return pbAuth.NewAuthServiceClient(authConn)
+
+	return res, nil
+}
+
+func (s *authService) Login(ctx context.Context, req *pbAuth.LoginRequest) (*pbAuth.LoginResponse, error) {
+	//TODO implement me
+	return nil, nil
+}
+
+func (s *authService) CreateOtp() {
+	//TODO implement me
+	return
+}
+
+func (s *authService) ValidateOtp() (*string, error) {
+	//TODO implement me
+	return nil, nil
 }
