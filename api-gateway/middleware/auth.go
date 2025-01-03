@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +26,7 @@ func (m *Middleware) Auth() gin.HandlerFunc {
 		req := &pbAuth.ValidateTokenRequest{Token: tokenValue}
 		res, err := authClient.ValidateToken(context.Background(), req)
 		if err != nil {
-			helper.BadResponse(c, "server error", http.StatusInternalServerError)
+			helper.BadResponse(c, fmt.Sprintf("server error : %s", err.Error()), http.StatusInternalServerError)
 			c.Abort()
 			return
 		}
