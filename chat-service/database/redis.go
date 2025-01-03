@@ -146,6 +146,11 @@ func (c *Cacher) Subcribe(channelName string) (*redis.Message, error) {
 	return message, err
 }
 
+func (c *Cacher) Range(key string, start, stop int64) ([]string, error) {
+	result, err := c.rdb.LRange(context.Background(), key, start, stop).Result()
+	return result, err
+}
+
 // Hash
 func (c *Cacher) HSet(key, field, value string) error {
 	return c.rdb.HSet(context.Background(), key, field, value).Err()

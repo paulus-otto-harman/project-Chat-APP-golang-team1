@@ -45,13 +45,13 @@ func NewServiceContext() (*ServiceContext, error) {
 	rdb := database.NewCacher(appConfig, 60*60)
 
 	// instance repository
-	repo := repository.NewRepository(db, rdb, appConfig, logger)
+	repo := repository.NewRepository(db, logger)
 
 	// instance service
-	services := service.NewService(repo, appConfig, logger)
+	services := service.NewService(repo, logger)
 
 	// instance controller
-	Ctl := handler.NewHandler(services, logger, rdb)
+	Ctl := handler.NewHandler(services, logger)
 
 	return &ServiceContext{Cacher: rdb, Cfg: appConfig, Ctl: *Ctl, Log: logger}, nil
 }

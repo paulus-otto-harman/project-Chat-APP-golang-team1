@@ -1,6 +1,8 @@
 package database
 
 import (
+	"project/chat-service/model"
+
 	"gorm.io/gorm"
 )
 
@@ -24,14 +26,15 @@ func Migrate(db *gorm.DB) error {
 
 func autoMigrates(db *gorm.DB) error {
 	return db.AutoMigrate(
-
+		&model.User{},
+		&model.Room{},
+		&model.RoomParticipant{},
+		&model.Message{},
 	)
 }
 
 func dropTables(db *gorm.DB) error {
-	return db.Migrator().DropTable(
-
-	)
+	return db.Migrator().DropTable()
 }
 
 func setupJoinTables(db *gorm.DB) error {
@@ -45,5 +48,3 @@ func createViews(db *gorm.DB) error {
 
 	return err
 }
-
-

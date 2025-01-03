@@ -1,15 +1,17 @@
 package service
 
 import (
-	"project/chat-service/config"
 	"project/chat-service/repository"
 
 	"go.uber.org/zap"
 )
 
 type Service struct {
+	ChatService ChatService
 }
 
-func NewService(repo repository.Repository, appConfig config.Config, log *zap.Logger) Service {
-	return Service{}
+func NewService(repo repository.Repository, log *zap.Logger) Service {
+	return Service{
+		ChatService: NewChatService(repo),
+	}
 }

@@ -1,16 +1,16 @@
 package repository
 
 import (
-	"project/chat-service/config"
-	"project/chat-service/database"
-
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type Repository struct {
+	ChatRepo ChatRepository
 }
 
-func NewRepository(db *gorm.DB, cacher database.Cacher, config config.Config, log *zap.Logger) Repository {
-	return Repository{}
+func NewRepository(db *gorm.DB, log *zap.Logger) Repository {
+	return Repository{
+		ChatRepo: NewChatRepository(db, log),
+	}
 }
