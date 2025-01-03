@@ -12,7 +12,7 @@ type AuthService interface {
 	Register(user model.User) (*pbAuth.RegisterResponse, error)
 	Login(user model.User) (*pbAuth.LoginResponse, error)
 	CreateOtp()
-	ValidateOtp() (*string, error)
+	ValidateOtp(otp model.Otp) (*string, error)
 }
 type authService struct {
 	serviceUrl string
@@ -58,7 +58,15 @@ func (s *authService) CreateOtp() {
 	return
 }
 
-func (s *authService) ValidateOtp() (*string, error) {
-	//TODO implement me
-	return nil, nil
+func (s *authService) ValidateOtp(otp model.Otp) (*string, error) {
+	authConn := helper.MustConnect(s.serviceUrl)
+	defer authConn.Close()
+
+	authClient := pbAuth.NewAuthServiceClient(authConn)
+	req := &pbAuth.ValidateOtpRequest{Id: otp.ID.String(), Otp: otp.Otp}
+	res, err := authClient.ValidateOtp(context.Background(), req)
+	if err != nil {
+		return nil, nil
+	}
+	return &res.Token, nil
 }

@@ -10,16 +10,16 @@ import (
 
 type Handler struct {
 	AuthHandler    AuthController
+	ChatHandler    ChatController
 	ContactHandler ContactController
-	OtpHandler     OtpController
 	UserHandler    UserController
 }
 
 func NewHandler(service service.Service, logger *zap.Logger, rdb database.Cacher) *Handler {
 	return &Handler{
 		AuthHandler:    *NewAuthController(service, logger, rdb),
+		ChatHandler:    *NewChatController(service, logger),
 		ContactHandler: *NewContactController(service, logger),
-		OtpHandler:     *NewOtpController(service, logger),
 		UserHandler:    *NewUserController(service, logger),
 	}
 }

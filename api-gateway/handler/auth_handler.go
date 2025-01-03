@@ -68,6 +68,32 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 	GoodResponseWithData(c, "login success. otp sent", http.StatusOK, nil)
 }
 
+func (ctrl *AuthController) ValidateOtp(c *gin.Context) {
+	otpID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		BadResponse(c, "invalid otp", http.StatusUnprocessableEntity)
+	}
+
+	otp := model.Otp{ID: otpID}
+	if err = c.ShouldBindJSON(&otp); err != nil {
+		BadResponse(c, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	res, err := ctrl.service.Auth.ValidateOtp(otp)
+	if err != nil {
+		BadResponse(c, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if res == nil {
+		BadResponse(c, "not found", http.StatusNotFound)
+		return
+	}
+
+	GoodResponseWithData(c, "otp is valid", http.StatusOK, gin.H{"token": res})
+}
+
 type EmailData struct {
 	ID  uuid.UUID
 	OTP string
