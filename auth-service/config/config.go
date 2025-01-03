@@ -13,7 +13,7 @@ type Config struct {
 	GrpcIp          string
 	GrpcPort        string
 	ShutdownTimeout int
-	RSAKeys
+	RSAKeys         RSAKeys
 }
 
 type DatabaseConfig struct {
@@ -94,8 +94,8 @@ func loadRedisConfig() RedisConfig {
 
 func loadRSAKeys() RSAKeys {
 	return RSAKeys{
-		PrivateKey: viper.GetString("RSA_PRIVATE_KEY"),
-		PublicKey:  viper.GetString("RSA_PUBLIC_KEY"),
+		PrivateKey: viper.GetString("PRIVATE_KEY"),
+		PublicKey:  viper.GetString("PUBLIC_KEY"),
 	}
 }
 

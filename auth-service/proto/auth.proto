@@ -28,7 +28,8 @@ message RegisterResponse {
 }
 
 message ValidateOtpRequest {
-  string otp = 1;
+  string id = 1;
+  string otp = 2;
 }
 
 message ValidateOtpResponse {

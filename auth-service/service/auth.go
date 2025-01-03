@@ -5,12 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"project/auth-service/config"
 	"project/auth-service/model"
 	pb "project/auth-service/proto"
 	"project/auth-service/repository"
 	"strings"
+	"time"
 )
 
 type AuthService struct {
@@ -49,32 +51,65 @@ func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 }
 
 func (s *AuthService) ValidateOtp(ctx context.Context, req *pb.ValidateOtpRequest) (*pb.ValidateOtpResponse, error) {
-	return &pb.ValidateOtpResponse{Token: "jwt-token-here"}, nil
+	OtpID, err := uuid.Parse(req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	otp, err := s.repo.Otp.Get(model.Otp{ID: OtpID, Otp: req.Otp})
+	if err != nil {
+		return nil, err
+	}
+
+	key, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(s.rsaKeys.PrivateKey))
+	if err != nil {
+		s.log.Error("Failed to parse RSA key", zap.Error(err))
+		return nil, err
+	}
+
+	expirationTime := time.Now().Add(1 * time.Hour)
+	claims := &customClaims{
+		UserID:         otp.User.ID,
+		Email:          otp.User.Email,
+		IP:             "",
+		StandardClaims: jwt.StandardClaims{ExpiresAt: expirationTime.Unix()},
+	}
+
+	token, err := jwt.NewWithClaims(jwt.SigningMethodRS256, claims).SignedString(key)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ValidateOtpResponse{Token: token}, nil
 }
 
 func (s *AuthService) ValidateToken(ctx context.Context, req *pb.ValidateTokenRequest) (*pb.ValidateTokenResponse, error) {
 	key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(s.rsaKeys.PublicKey))
 	if err != nil {
-		return nil, errors.New("failed to get authentication key")
+		s.log.Error("failed to parse public key", zap.Error(err))
+		return nil, err
 	}
 
 	if len(req.Token) == 0 {
+		s.log.Error("authorization token is empty")
 		return nil, errors.New("authorization token not found")
 	}
 
 	claims := &customClaims{}
-	tkn, err := jwt.ParseWithClaims(strings.Split(req.Token, "Bearer ")[1], claims, func(token *jwt.Token) (interface{}, error) {
+	jsonWebToken, err := jwt.ParseWithClaims(strings.ReplaceAll(req.Token, "Bearer ", ""), claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			s.log.Error("unexpected signing method")
 			return nil, errors.New(fmt.Sprintf("unexpected method: %s", token.Header["alg"]))
 		}
 		return key, nil
 	})
 
 	if err != nil {
-		return nil, errors.New("fail to validate signature or session expired")
+		s.log.Error("failed to parse token", zap.Error(err))
+		return nil, err
 	}
 
-	if !tkn.Valid {
+	if !jsonWebToken.Valid {
 		return nil, errors.New("invalid token")
 	}
 
@@ -82,8 +117,8 @@ func (s *AuthService) ValidateToken(ctx context.Context, req *pb.ValidateTokenRe
 }
 
 type customClaims struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	IP    string `json:"ip"`
+	UserID uint   `json:"id"`
+	Email  string `json:"email"`
+	IP     string `json:"ip"`
 	jwt.StandardClaims
 }
