@@ -48,7 +48,7 @@ func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 	return &pb.LoginResponse{Otp: otp.Otp}, nil
 }
 
-func (s *AuthService) ValidateOTP(ctx context.Context, req *pb.ValidateOtpRequest) (*pb.ValidateOtpResponse, error) {
+func (s *AuthService) ValidateOtp(ctx context.Context, req *pb.ValidateOtpRequest) (*pb.ValidateOtpResponse, error) {
 	return &pb.ValidateOtpResponse{Token: "jwt-token-here"}, nil
 }
 
