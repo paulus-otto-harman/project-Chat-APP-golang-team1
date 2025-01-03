@@ -7,6 +7,7 @@ option go_package = "./";
 service AuthService {
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc Register (RegisterRequest) returns (RegisterResponse);
+  rpc ValidateOtp (ValidateOtpRequest) returns (ValidateOtpResponse);
   rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
 }
 
@@ -24,6 +25,14 @@ message RegisterRequest {
 
 message RegisterResponse {
   string otp = 1;
+}
+
+message ValidateOtpRequest {
+  string otp = 1;
+}
+
+message ValidateOtpResponse {
+  string token = 1;
 }
 
 message ValidateTokenRequest {

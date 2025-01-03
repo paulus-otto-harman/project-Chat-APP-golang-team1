@@ -30,11 +30,13 @@ func Migrate(db *gorm.DB) error {
 func autoMigrates(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&model.User{},
+		&model.Otp{},
 	)
 }
 
 func dropTables(db *gorm.DB) error {
 	return db.Migrator().DropTable(
+		&model.Otp{},
 		&model.User{},
 	)
 }
