@@ -37,7 +37,7 @@ func (m *Middleware) Auth() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("username", res.Email)
+		c.Set("email", res.Email)
 		c.Next()
 	}
 }

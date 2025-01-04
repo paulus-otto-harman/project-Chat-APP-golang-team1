@@ -27,6 +27,12 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		return
 	}
 
+	_, err := ctrl.service.User.CreateUser(user)
+	if err != nil {
+		BadResponse(c, "Email Already Registered", http.StatusBadRequest)
+		return
+	}
+
 	res, err := ctrl.service.Auth.Register(user)
 	if err != nil {
 		BadResponse(c, err.Error(), http.StatusInternalServerError)

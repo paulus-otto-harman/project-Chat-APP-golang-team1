@@ -10,17 +10,17 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-type ServiceUser struct {
+type UserService struct {
 	repo repository.Repository
 	log  *zap.Logger
 	pb.UnimplementedUserServiceServer
 }
 
-func NewServiceUser(repo repository.Repository, log *zap.Logger) *ServiceUser {
-	return &ServiceUser{repo: repo, log: log}
+func NewUserService(repo repository.Repository, log *zap.Logger) *UserService {
+	return &UserService{repo: repo, log: log}
 }
 
-func (s *ServiceUser) GetAllUsers(ctx context.Context, req *pb.Empty) (*pb.UsersList, error) {
+func (s *UserService) GetAllUsers(ctx context.Context, req *pb.Empty) (*pb.UsersList, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	var filter bool
 	isOnline, ok := md["filter"]
@@ -46,7 +46,8 @@ func (s *ServiceUser) GetAllUsers(ctx context.Context, req *pb.Empty) (*pb.Users
 	}
 	return &pb.UsersList{Users: usersPb}, nil
 }
-func (s *ServiceUser) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponseSuccess, error) {
+
+func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponseSuccess, error) {
 	var user model.User
 	user.Email = req.Email
 	err := s.repo.User.Insert(&user)
@@ -55,17 +56,16 @@ func (s *ServiceUser) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 	return &pb.UserResponseSuccess{Message: "Create User Succes"}, nil
 }
-func (s *ServiceUser) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UserResponseSuccess, error) {
-	var user model.User
-	md, ok := metadata.FromIncomingContext(ctx)
-	if ok {
-		user.Email = md["email"][0]
+
+func (s *UserService) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UserResponseSuccess, error) {
+	user := model.User{
+		Email:     req.Email,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
 	}
-	user.FirstName = req.FirstName
-	user.LastName = req.LastName
 	err := s.repo.User.UpdateProfile(&user)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.UserResponseSuccess{Message: "Update Profile Succes"}, nil
+	return &pb.UserResponseSuccess{Message: "Update Profile Success"}, nil
 }

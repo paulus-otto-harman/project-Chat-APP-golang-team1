@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/spf13/viper"
 	"log"
+
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -13,6 +14,12 @@ type Config struct {
 	ServerIp           string
 	ServerPort         string
 	ShutdownTimeout    int
+	AuthServiceIp      string
+	UserServiceIp      string
+	ChatServiceIp      string
+	AuthServicePort    string
+	UserServicePort    string
+	ChatServicePort    string
 }
 
 type RedisConfig struct {
@@ -62,6 +69,12 @@ func LoadConfig() (Config, error) {
 		Email:              loadEmailConfig(),
 		RedisConfig:        loadRedisConfig(),
 		MicroserviceConfig: loadMicroserviceConfig(),
+		AuthServiceIp:      viper.GetString("AUTH_SERVICE_IP"),
+		UserServiceIp:      viper.GetString("USER_SERVICE_IP"),
+		ChatServiceIp:      viper.GetString("CHAT_SERVICE_IP"),
+		AuthServicePort:    viper.GetString("AUTH_SERVICE_PORT"),
+		UserServicePort:    viper.GetString("USER_SERVICE_PORT"),
+		ChatServicePort:    viper.GetString("USER_SERVICE_PORT"),
 	}
 	return config, nil
 }
@@ -85,6 +98,8 @@ func loadEmailConfig() EmailConfig {
 func loadMicroserviceConfig() MicroserviceConfig {
 	return MicroserviceConfig{
 		Auth: viper.GetString("AUTH_SERVICE_IP") + ":" + viper.GetString("AUTH_SERVICE_PORT"),
+		User: viper.GetString("USER_SERVICE_IP") + ":" + viper.GetString("USER_SERVICE_PORT"),
+		Chat: viper.GetString("CHAT_SERVICE_IP") + ":" + viper.GetString("CHAT_SERVICE_PORT"),
 	}
 }
 

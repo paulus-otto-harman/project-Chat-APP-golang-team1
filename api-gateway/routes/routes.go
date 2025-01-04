@@ -23,7 +23,9 @@ func NewRoutes(ctx infra.ServiceContext) {
 	r.PUT("/otp/:id", ctx.Ctl.AuthHandler.ValidateOtp)
 
 	r.Use(ctx.Middleware.Auth())
-	r.PUT("/profile", ctx.Ctl.UserHandler.Update)
+	r.GET("/users", ctx.Ctl.UserHandler.GetAllUsers)
+	r.PUT("/profile", ctx.Ctl.UserHandler.UpdateProfile)
+
 	contactRoutes := r.Group("/user/contacts")
 	{
 		contactRoutes.POST("/", ctx.Ctl.ContactHandler.Add)

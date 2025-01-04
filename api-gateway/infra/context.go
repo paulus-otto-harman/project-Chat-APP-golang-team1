@@ -20,7 +20,6 @@ type ServiceContext struct {
 }
 
 func NewServiceContext() (*ServiceContext, error) {
-
 	handlerError := func(err error) (*ServiceContext, error) {
 		return nil, err
 	}
