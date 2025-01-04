@@ -13,6 +13,7 @@ type Config struct {
 	GrpcIp          string
 	GrpcPort        string
 	ShutdownTimeout int
+	RSAKeys         RSAKeys
 }
 
 type DatabaseConfig struct {
@@ -30,6 +31,11 @@ type RedisConfig struct {
 	Url      string
 	Password string
 	Prefix   string
+}
+
+type RSAKeys struct {
+	PrivateKey string
+	PublicKey  string
 }
 
 func LoadConfig() (Config, error) {
@@ -55,14 +61,13 @@ func LoadConfig() (Config, error) {
 
 	// add value to the config
 	config := Config{
-		DB: loadDatabaseConfig(),
-
+		DB:              loadDatabaseConfig(),
 		AppDebug:        viper.GetBool("APP_DEBUG"),
 		GrpcIp:          viper.GetString("GRPC_IP"),
 		GrpcPort:        viper.GetString("GRPC_PORT"),
 		ShutdownTimeout: viper.GetInt("SHUTDOWN_TIMEOUT"),
-
-		RedisConfig: loadRedisConfig(),
+		RedisConfig:     loadRedisConfig(),
+		RSAKeys:         loadRSAKeys(),
 	}
 	return config, nil
 }
@@ -84,6 +89,13 @@ func loadRedisConfig() RedisConfig {
 		Url:      viper.GetString("REDIS_URL"),
 		Password: viper.GetString("REDIS_PASSWORD"),
 		Prefix:   viper.GetString("REDIS_PREFIX"),
+	}
+}
+
+func loadRSAKeys() RSAKeys {
+	return RSAKeys{
+		PrivateKey: viper.GetString("PRIVATE_KEY"),
+		PublicKey:  viper.GetString("PUBLIC_KEY"),
 	}
 }
 

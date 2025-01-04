@@ -1,10 +1,10 @@
 package service
 
 import (
-	"api_gateway/config"
 	"bytes"
 	"context"
 	"html/template"
+	"project/api-gateway/config"
 	"time"
 
 	"github.com/mailersend/mailersend-go"

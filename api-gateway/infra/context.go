@@ -1,29 +1,25 @@
 package infra
 
 import (
-	"api_gateway/config"
-	"api_gateway/database"
-	"api_gateway/handler"
-	"api_gateway/helper"
-	"api_gateway/log"
-	pbAuth "api_gateway/proto/auth_proto"
-	pbUser "api_gateway/proto/user_proto"
-	"api_gateway/service"
-	"fmt"
-
 	"go.uber.org/zap"
+	"project/api-gateway/config"
+	"project/api-gateway/database"
+	"project/api-gateway/handler"
+	"project/api-gateway/log"
+	"project/api-gateway/middleware"
+	"project/api-gateway/service"
 )
 
 type ServiceContext struct {
-	Cacher database.Cacher
-	Cfg    config.Config
-	Ctl    handler.Handler
-	Log    *zap.Logger
-	Svc    *service.Service
+	Cacher     database.Cacher
+	Cfg        config.Config
+	Ctl        handler.Handler
+	Log        *zap.Logger
+	Middleware middleware.Middleware
+	Svc        *service.Service
 }
 
 func NewServiceContext() (*ServiceContext, error) {
-
 	handlerError := func(err error) (*ServiceContext, error) {
 		return nil, err
 	}
@@ -45,13 +41,11 @@ func NewServiceContext() (*ServiceContext, error) {
 	// instance service
 	services := service.NewService(appConfig, logger)
 
-	// instance gRPC Connection
-	authConn := helper.NewConnection(fmt.Sprintf("%s:%s", appConfig.AuthServiceIp, appConfig.AuthServicePort))
-	pbAuth := pbAuth.NewAuthServiceClient(authConn)
-	userConn := helper.NewConnection(fmt.Sprintf("%s:%s", appConfig.UserServiceIp, appConfig.UserServicePort))
-	pbUser := pbUser.NewUserServiceClient(userConn)
 	// instance controller
-	Ctl := handler.NewHandler(logger, rdb, pbAuth, pbUser)
+	Ctl := handler.NewHandler(services, logger, rdb)
+
+	mw := middleware.NewMiddleware(appConfig.MicroserviceConfig, rdb)
+
 	//return &ServiceContext{Cacher: rdb, Cfg: appConfig, Svc: &services, Log: logger}, nil
-	return &ServiceContext{Cfg: appConfig, Ctl: *Ctl, Svc: &services, Log: logger}, nil
+	return &ServiceContext{Cfg: appConfig, Ctl: *Ctl, Middleware: mw, Log: logger, Svc: &services}, nil
 }

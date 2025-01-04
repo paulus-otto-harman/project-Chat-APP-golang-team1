@@ -1,7 +1,8 @@
-*/.env
+
 
 !.env.example
 
 docs/
 
 *.log
+*.env

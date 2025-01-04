@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"api_gateway/config"
-	"api_gateway/database"
+	"project/api-gateway/config"
+	"project/api-gateway/database"
 
 	"go.uber.org/zap"
 )

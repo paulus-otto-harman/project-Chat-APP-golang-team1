@@ -25,7 +25,7 @@ func main() {
 	server := grpc.NewServer()
 	pb.RegisterAuthServiceServer(server, ctx.Svc.Auth)
 
-	log.Println("service started")
+	log.Printf("auth-service started %s:%s", ctx.Cfg.GrpcIp, ctx.Cfg.GrpcPort)
 	if err = server.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

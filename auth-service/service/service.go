@@ -13,6 +13,6 @@ type Service struct {
 
 func NewService(repo repository.Repository, appConfig config.Config, log *zap.Logger) Service {
 	return Service{
-		Auth: &AuthService{Repo: repo},
+		Auth: NewAuthService(repo, log, appConfig.RSAKeys),
 	}
 }

@@ -18,3 +18,9 @@ func NewAuthRepository(db *gorm.DB, log *zap.Logger) *AuthRepository {
 func (repo *AuthRepository) Create(user *model.User) error {
 	return repo.db.Create(user).Error
 }
+
+func (repo *AuthRepository) Get(criteria model.User) (model.User, error) {
+	var user model.User
+	err := repo.db.Where(criteria).First(&user).Error
+	return user, err
+}
