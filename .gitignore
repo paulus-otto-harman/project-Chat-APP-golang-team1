@@ -1,7 +1,8 @@
-api-gateway/.env
+
 
 !.env.example
 
 docs/
 
 *.log
+*.env

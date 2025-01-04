@@ -2,9 +2,8 @@ package config
 
 import (
 	"flag"
-	"log"
-
 	"github.com/spf13/viper"
+	"log"
 )
 
 type Config struct {
@@ -63,7 +62,6 @@ func LoadConfig() (Config, error) {
 		AppDebug:        viper.GetBool("APP_DEBUG"),
 		ServerPort:      viper.GetString("SERVER_PORT"),
 		ShutdownTimeout: viper.GetInt("SHUTDOWN_TIMEOUT"),
-
 		RedisConfig: loadRedisConfig(),
 	}
 	return config, nil
@@ -93,8 +91,8 @@ func setDefaultValues() {
 	viper.SetDefault("DB_HOST", "localhost")
 	viper.SetDefault("DB_PORT", "5432")
 	viper.SetDefault("DB_USER", "postgres")
-	viper.SetDefault("DB_PASSWORD", "superUser")
-	viper.SetDefault("DB_NAME", "db_example")
+	viper.SetDefault("DB_PASSWORD", "admin")
+	viper.SetDefault("DB_NAME", "postgres")
 	viper.SetDefault("APP_DEBUG", true)
 	viper.SetDefault("GRPC_IP", "localhost")
 	viper.SetDefault("GRPC_PORT", ":50152")

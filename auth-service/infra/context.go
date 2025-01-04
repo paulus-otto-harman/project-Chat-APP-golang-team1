@@ -3,7 +3,6 @@ package infra
 import (
 	"project/auth-service/config"
 	"project/auth-service/database"
-	"project/auth-service/handler"
 	"project/auth-service/log"
 	"project/auth-service/repository"
 	"project/auth-service/service"
@@ -15,7 +14,7 @@ type ServiceContext struct {
 	Cacher database.Cacher
 	Cfg    config.Config
 	Log    *zap.Logger
-	Ctl    handler.Handler
+	Svc    *service.Service
 }
 
 func NewServiceContext() (*ServiceContext, error) {
@@ -50,8 +49,5 @@ func NewServiceContext() (*ServiceContext, error) {
 	// instance service
 	services := service.NewService(repo, appConfig, logger)
 
-	// instance controller
-	Ctl := handler.NewHandler(services, logger, rdb)
-
-	return &ServiceContext{Cacher: rdb, Cfg: appConfig, Ctl: *Ctl, Log: logger}, nil
+	return &ServiceContext{Cacher: rdb, Cfg: appConfig, Svc: &services, Log: logger}, nil
 }
