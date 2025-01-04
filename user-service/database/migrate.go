@@ -1,7 +1,7 @@
 package database
 
 import (
-	"user_service/model"
+	"project/user-service/model"
 
 	"gorm.io/gorm"
 )

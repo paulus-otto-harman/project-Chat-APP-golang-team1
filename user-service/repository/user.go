@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"log"
-	"user_service/model"
+	"project/user-service/model"
 
 	"gorm.io/gorm"
 )

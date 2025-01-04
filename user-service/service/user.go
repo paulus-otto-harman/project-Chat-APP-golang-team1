@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"user_service/model"
-	pb "user_service/proto"
-	"user_service/repository"
+	"project/user-service/model"
+	pb "project/user-service/proto"
+	"project/user-service/repository"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"

@@ -1,11 +1,11 @@
 package infra
 
 import (
-	"user_service/config"
-	"user_service/database"
-	"user_service/log"
-	"user_service/repository"
-	"user_service/service"
+	"project/user-service/config"
+	"project/user-service/database"
+	"project/user-service/log"
+	"project/user-service/repository"
+	"project/user-service/service"
 
 	"go.uber.org/zap"
 )

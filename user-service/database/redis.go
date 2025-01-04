@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"project/user-service/config"
 	"time"
-	"user_service/config"
 
 	"github.com/go-redis/redis/v8"
 )

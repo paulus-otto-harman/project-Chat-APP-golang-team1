@@ -2,8 +2,8 @@ package database
 
 import (
 	"fmt"
+	"project/user-service/model"
 	"reflect"
-	"user_service/model"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

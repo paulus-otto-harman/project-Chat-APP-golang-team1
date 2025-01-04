@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
+	"google.golang.org/grpc"
 	"log"
 	"net"
-	"user_service/infra"
-	pb "user_service/proto"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"project/user-service/infra"
+	pb "project/user-service/proto"
 )
 
 func main() {
@@ -26,7 +24,7 @@ func main() {
 
 	server := grpc.NewServer()
 	pb.RegisterUserServiceServer(server, ctx.Svc.User)
-	reflection.Register(server)
+
 	log.Printf("user-service started %s:%s", ctx.Cfg.GrpcIp, ctx.Cfg.GrpcPort)
 	if err = server.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)

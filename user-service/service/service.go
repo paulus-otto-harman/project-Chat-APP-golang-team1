@@ -1,8 +1,8 @@
 package service
 
 import (
-	"user_service/config"
-	"user_service/repository"
+	"project/user-service/config"
+	"project/user-service/repository"
 
 	"go.uber.org/zap"
 )
