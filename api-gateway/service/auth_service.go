@@ -1,11 +1,12 @@
 package service
 
 import (
+	"api_gateway/helper"
+	"api_gateway/model"
+	pbAuth "api_gateway/proto/auth_proto"
 	"context"
+
 	"go.uber.org/zap"
-	"project/api-gateway/helper"
-	"project/api-gateway/model"
-	pbAuth "project/auth-service/proto"
 )
 
 type AuthService interface {
@@ -29,7 +30,8 @@ func (s *authService) Register(user model.User) (*pbAuth.RegisterResponse, error
 
 	authClient := pbAuth.NewAuthServiceClient(authConn)
 
-	req := &pbAuth.RegisterRequest{Username: user}
+	req := &pbAuth.RegisterRequest{}
+	// req := &pbAuth.RegisterRequest{Username: user}
 	res, err := authClient.Register(context.Background(), req)
 	if err != nil {
 		return nil, nil

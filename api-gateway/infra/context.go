@@ -1,12 +1,17 @@
 package infra
 
 import (
+	"api_gateway/config"
+	"api_gateway/database"
+	"api_gateway/handler"
+	"api_gateway/helper"
+	"api_gateway/log"
+	pbAuth "api_gateway/proto/auth_proto"
+	pbUser "api_gateway/proto/user_proto"
+	"api_gateway/service"
+	"fmt"
+
 	"go.uber.org/zap"
-	"project/api-gateway/config"
-	"project/api-gateway/database"
-	"project/api-gateway/handler"
-	"project/api-gateway/log"
-	"project/api-gateway/service"
 )
 
 type ServiceContext struct {
@@ -40,9 +45,13 @@ func NewServiceContext() (*ServiceContext, error) {
 	// instance service
 	services := service.NewService(appConfig, logger)
 
+	// instance gRPC Connection
+	authConn := helper.NewConnection(fmt.Sprintf("%s:%s", appConfig.AuthServiceIp, appConfig.AuthServicePort))
+	pbAuth := pbAuth.NewAuthServiceClient(authConn)
+	userConn := helper.NewConnection(fmt.Sprintf("%s:%s", appConfig.UserServiceIp, appConfig.UserServicePort))
+	pbUser := pbUser.NewUserServiceClient(userConn)
 	// instance controller
-	Ctl := handler.NewHandler(services, logger, rdb)
-
+	Ctl := handler.NewHandler(logger, rdb, pbAuth, pbUser)
 	//return &ServiceContext{Cacher: rdb, Cfg: appConfig, Svc: &services, Log: logger}, nil
 	return &ServiceContext{Cfg: appConfig, Ctl: *Ctl, Svc: &services, Log: logger}, nil
 }

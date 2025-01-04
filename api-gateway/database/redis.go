@@ -1,10 +1,10 @@
 package database
 
 import (
+	"api_gateway/config"
 	"context"
 	"fmt"
 	"log"
-	"project/api-gateway/config"
 	"time"
 
 	"github.com/go-redis/redis/v8"

@@ -1,8 +1,9 @@
 package service
 
 import (
+	"api_gateway/config"
+
 	"go.uber.org/zap"
-	"project/api-gateway/config"
 )
 
 type Service struct {

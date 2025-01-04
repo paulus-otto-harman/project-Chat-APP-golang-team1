@@ -1,23 +1,29 @@
 package routes
 
 import (
+	"api_gateway/infra"
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"project/api-gateway/infra"
 	"syscall"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func NewRoutes(ctx infra.ServiceContext) {
 	r := gin.Default()
-
-	r.POST("/register", ctx.Ctl.AuthHandler.Register)
+	// r.POST("/register", ctx.Ctl.AuthHandler.Register)
+	r.POST("/register", ctx.Ctl.Register)
+	r.POST("/login", ctx.Ctl.Login)
+	r.PUT("/otp", ctx.Ctl.ValidateOTP)
+	r.Use(ctx.Ctl.ValidateToken)
+	r.GET("/users", ctx.Ctl.GetAllUsers)
+	r.PUT("/profile", ctx.Ctl.UpdateProfile)
 
 	gracefulShutdown(ctx, r.Handler())
 }

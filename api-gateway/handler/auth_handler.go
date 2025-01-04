@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"api_gateway/database"
+	"api_gateway/model"
+	"api_gateway/service"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
-	"net/http"
-	"project/api-gateway/database"
-	"project/api-gateway/model"
-	"project/api-gateway/service"
 )
 
 type AuthController struct {

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"api_gateway/infra"
+	"api_gateway/routes"
 	"log"
-	"project/api-gateway/infra"
-	"project/api-gateway/routes"
 )
 
 func main() {

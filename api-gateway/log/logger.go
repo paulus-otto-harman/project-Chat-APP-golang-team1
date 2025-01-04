@@ -1,9 +1,9 @@
 package log
 
 import (
+	"api_gateway/config"
 	"log"
 	"os"
-	"project/api-gateway/config"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
