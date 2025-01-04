@@ -16,7 +16,7 @@ func NewOtpRepository(db *gorm.DB, log *zap.Logger) *OtpRepository {
 }
 
 func (repo *OtpRepository) Create(otp *model.Otp) error {
-	return repo.db.Create(otp).Error
+	return repo.db.Create(&otp).Error
 }
 
 func (repo *OtpRepository) Get(criteria model.Otp) (model.Otp, error) {
