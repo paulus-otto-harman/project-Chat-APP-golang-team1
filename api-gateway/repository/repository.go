@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"go.uber.org/zap"
 	"project/api-gateway/config"
 	"project/api-gateway/database"
+
+	"go.uber.org/zap"
 )
 
 type Repository struct {

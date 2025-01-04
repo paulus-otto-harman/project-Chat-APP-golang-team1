@@ -3,11 +3,12 @@ package service
 import (
 	"bytes"
 	"context"
-	"github.com/mailersend/mailersend-go"
-	"go.uber.org/zap"
 	"html/template"
 	"project/api-gateway/config"
 	"time"
+
+	"github.com/mailersend/mailersend-go"
+	"go.uber.org/zap"
 )
 
 type EmailService interface {

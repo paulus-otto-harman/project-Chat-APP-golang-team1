@@ -16,7 +16,6 @@ type Cacher struct {
 	prefix string
 }
 
-// Addr:     url,
 func newRedisClient(url, password string, dbIndex int) *redis.Client {
 	return redis.NewClient(&redis.Options{
 		Addr:     url,

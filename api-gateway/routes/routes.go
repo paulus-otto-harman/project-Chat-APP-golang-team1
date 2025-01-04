@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"os"
@@ -18,6 +19,26 @@ func NewRoutes(ctx infra.ServiceContext) {
 	r := gin.Default()
 
 	r.POST("/register", ctx.Ctl.AuthHandler.Register)
+	r.POST("/login", ctx.Ctl.AuthHandler.Login)
+	r.PUT("/otp/:id", ctx.Ctl.AuthHandler.ValidateOtp)
+
+	r.Use(ctx.Middleware.Auth())
+	r.GET("/users", ctx.Ctl.UserHandler.GetAllUsers)
+	r.PUT("/profile", ctx.Ctl.UserHandler.UpdateProfile)
+
+	contactRoutes := r.Group("/user/contacts")
+	{
+		contactRoutes.POST("/", ctx.Ctl.ContactHandler.Add)
+		contactRoutes.DELETE("/", ctx.Ctl.ContactHandler.Remove)
+	}
+
+	chatRoutes := r.Group("/user/chats")
+	{
+		chatRoutes.GET("/:id/ws", ctx.Ctl.ChatHandler.Websocket)
+		chatRoutes.GET("/:id/messages", nil)
+		chatRoutes.POST("/:id/messages", nil)
+		chatRoutes.PUT("/messages/:message_id/status", nil)
+	}
 
 	gracefulShutdown(ctx, r.Handler())
 }
@@ -65,4 +86,11 @@ func launchServer(server *http.Server, port string) {
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("listen: %s\n", err)
 	}
+}
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		// Allow all origins. Modify as per your security needs.
+		return true
+	},
 }
