@@ -2,11 +2,13 @@ package seed
 
 import (
 	"github.com/google/uuid"
+	"project/auth-service/helper"
 	"project/auth-service/model"
 )
 
 func OTP() []model.Otp {
 	return []model.Otp{
+		{ID: uuid.MustParse("1cb7b89a-6627-43a8-a0a2-9df769804f83"), Otp: "1111", UserID: 1, ValidatedAt: helper.Ptr(helper.DateTime("2024-12-31 11:11:11"))},
 		{ID: uuid.MustParse("3262d24b-e0b2-42e5-b08f-b694bfcd3171"), Otp: "1111", UserID: 1},
 		{ID: uuid.MustParse("f7e8399d-bb15-4f78-9639-e9711c2bf061"), Otp: "2222", UserID: 2},
 		{ID: uuid.MustParse("3c6fd69c-671f-4568-bbf7-72de13fb4379"), Otp: "3333", UserID: 3},

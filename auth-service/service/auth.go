@@ -73,7 +73,7 @@ func (s *AuthService) ValidateOtp(ctx context.Context, req *pb.ValidateOtpReques
 		return nil, err
 	}
 
-	otp, err := s.repo.Otp.Get(model.Otp{ID: OtpID, Otp: req.Otp})
+	otp, err := s.repo.Otp.Update(model.Otp{ID: OtpID, Otp: req.Otp})
 	if err != nil {
 		return nil, err
 	}
