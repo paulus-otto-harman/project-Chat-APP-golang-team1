@@ -16,7 +16,8 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  string otp = 1;
+  string id = 1;
+  string otp = 2;
 }
 
 message RegisterRequest {
@@ -24,7 +25,8 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
-  string otp = 1;
+  string id = 1;
+  string otp = 2;
 }
 
 message ValidateOtpRequest {

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"go.uber.org/zap"
+	"log"
 	"project/api-gateway/helper"
 	"project/api-gateway/model"
 	pbAuth "project/auth-service/proto"
@@ -31,6 +32,7 @@ func (s *authService) Register(user model.User) (*pbAuth.RegisterResponse, error
 
 	req := &pbAuth.RegisterRequest{Email: user.Email}
 	res, err := authClient.Register(context.Background(), req)
+	log.Println(res)
 	if err != nil {
 		return nil, nil
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"math/rand"
 	"project/auth-service/config"
 	"project/auth-service/model"
 	pb "project/auth-service/proto"
@@ -32,10 +33,12 @@ func (s *AuthService) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 		return nil, err
 	}
 
-	otp := model.Otp{UserID: user.ID}
-	s.repo.Otp.Create(&otp)
+	otp, err := generateOtp(user.ID, s.repo.Otp)
+	if err != nil {
+		return nil, err
+	}
 
-	return &pb.RegisterResponse{Otp: otp.Otp}, nil
+	return &pb.RegisterResponse{Id: otp.ID.String(), Otp: otp.Otp}, nil
 }
 
 func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
@@ -44,10 +47,24 @@ func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 		return nil, err
 	}
 
-	otp := model.Otp{UserID: user.ID}
-	s.repo.Otp.Create(&otp)
+	otp, err := generateOtp(user.ID, s.repo.Otp)
+	if err != nil {
+		return nil, err
+	}
 
-	return &pb.LoginResponse{Otp: otp.Otp}, nil
+	return &pb.LoginResponse{Id: otp.ID.String(), Otp: otp.Otp}, nil
+}
+
+func generateOtp(userID uint, otpDB repository.OtpRepository) (*model.Otp, error) {
+	seed := time.Now().UnixNano()
+	rng := rand.New(rand.NewSource(seed))
+	oneTimePassword := fmt.Sprintf("%04d", rng.Intn(10000)) // Generate 4 digit OTP
+
+	otp := model.Otp{UserID: userID, Otp: oneTimePassword}
+	if err := otpDB.Create(&otp); err != nil {
+		return nil, err
+	}
+	return &otp, nil
 }
 
 func (s *AuthService) ValidateOtp(ctx context.Context, req *pb.ValidateOtpRequest) (*pb.ValidateOtpResponse, error) {
@@ -56,7 +73,7 @@ func (s *AuthService) ValidateOtp(ctx context.Context, req *pb.ValidateOtpReques
 		return nil, err
 	}
 
-	otp, err := s.repo.Otp.Get(model.Otp{ID: OtpID, Otp: req.Otp})
+	otp, err := s.repo.Otp.Update(model.Otp{ID: OtpID, Otp: req.Otp})
 	if err != nil {
 		return nil, err
 	}
