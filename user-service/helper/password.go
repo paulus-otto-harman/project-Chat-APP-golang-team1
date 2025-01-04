@@ -1,8 +1,6 @@
 package helper
 
-import (
-	"golang.org/x/crypto/bcrypt"
-)
+import "golang.org/x/crypto/bcrypt"
 
 func CheckPassword(inputPassword, storedPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(inputPassword))

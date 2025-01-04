@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"reflect"
+	"user_service/model"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -25,6 +26,6 @@ func SeedAll(db *gorm.DB) error {
 
 func dataSeeds() []interface{} {
 	return []interface{}{
-
+		model.Seed(),
 	}
 }

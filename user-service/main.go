@@ -1,15 +1,34 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"project/user-service/infra"
+	"net"
+	"user_service/infra"
+	pb "user_service/proto"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
-	ctx, err := infra.NewServiceContext()
-	if err != nil {
+	var err error
+
+	var ctx *infra.ServiceContext
+	if ctx, err = infra.NewServiceContext(); err != nil {
 		log.Fatal("can't init service context %w", err)
 	}
 
-	log.Println(ctx)
+	var listener net.Listener
+	if listener, err = net.Listen("tcp", fmt.Sprintf("%s:%s", ctx.Cfg.GrpcIp, ctx.Cfg.GrpcPort)); err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	server := grpc.NewServer()
+	pb.RegisterUserServiceServer(server, ctx.Svc.User)
+	reflection.Register(server)
+	log.Printf("user-service started %s:%s", ctx.Cfg.GrpcIp, ctx.Cfg.GrpcPort)
+	if err = server.Serve(listener); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }

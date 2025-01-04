@@ -3,7 +3,7 @@ package log
 import (
 	"log"
 	"os"
-	"project/user-service/config"
+	"user_service/config"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

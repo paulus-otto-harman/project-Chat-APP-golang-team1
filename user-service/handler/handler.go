@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"user_service/database"
+	"user_service/service"
+
 	"go.uber.org/zap"
-	"project/user-service/database"
-	"project/user-service/service"
 )
 
 type Handler struct {

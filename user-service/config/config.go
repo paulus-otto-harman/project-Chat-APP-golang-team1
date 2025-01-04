@@ -2,14 +2,17 @@ package config
 
 import (
 	"flag"
-	"github.com/spf13/viper"
 	"log"
+
+	"github.com/spf13/viper"
 )
 
 type Config struct {
 	AppDebug        bool
 	DB              DatabaseConfig
 	RedisConfig     RedisConfig
+	GrpcIp          string
+	GrpcPort        string
 	ServerPort      string
 	ShutdownTimeout int
 }
@@ -54,8 +57,9 @@ func LoadConfig() (Config, error) {
 
 	// add value to the config
 	config := Config{
-		DB: loadDatabaseConfig(),
-
+		DB:              loadDatabaseConfig(),
+		GrpcIp:          viper.GetString("GRPC_IP"),
+		GrpcPort:        viper.GetString("GRPC_PORT"),
 		AppDebug:        viper.GetBool("APP_DEBUG"),
 		ServerPort:      viper.GetString("SERVER_PORT"),
 		ShutdownTimeout: viper.GetInt("SHUTDOWN_TIMEOUT"),
@@ -89,10 +93,11 @@ func setDefaultValues() {
 	viper.SetDefault("DB_HOST", "localhost")
 	viper.SetDefault("DB_PORT", "5432")
 	viper.SetDefault("DB_USER", "postgres")
-	viper.SetDefault("DB_PASSWORD", "admin")
-	viper.SetDefault("DB_NAME", "postgres")
+	viper.SetDefault("DB_PASSWORD", "superUser")
+	viper.SetDefault("DB_NAME", "db_example")
 	viper.SetDefault("APP_DEBUG", true)
-	viper.SetDefault("SERVER_PORT", ":8080")
+	viper.SetDefault("GRPC_IP", "localhost")
+	viper.SetDefault("GRPC_PORT", ":50152")
 	viper.SetDefault("SHUTDOWN_TIMEOUT", 5)
 
 	viper.SetDefault("DB_MIGRATE", false)
