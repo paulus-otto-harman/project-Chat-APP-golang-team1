@@ -14,8 +14,8 @@ services:
 #      - "host.docker.internal:0.0.0.0"
     depends_on:
       - auth-service
-#      - chat-service
-#      - user-service
+      - user-service
+      - chat-service
 
   auth-service:
 #    platform: "linux/amd64"
@@ -31,21 +31,27 @@ services:
 #    extra_hosts:
 #      - "host.docker.internal:0.0.0.0"
 
-#  chat-service:
-#    build:
-#      context: ./chat-service
-#    ports:
-#      - "${PORT:-51152}:${PORT:-51152}"
-#    env_file:
-#      - ./chat-service/.env
-#
-#  user-service:
-#    build:
-#      context: ./user-service
-#    ports:
-#      - "${PORT:-51153}:${PORT:-51153}"
-#    env_file:
-#      - ./user-service/.env
+  user-service:
+    #    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: ./user-service/Dockerfile
+    image: paulusottoharman/team1-user-service
+    ports:
+      - "${GRPC_PORT:-51152}:${GRPC_PORT:-51152}"
+    env_file:
+      - user-service/.env
+
+  chat-service:
+    #    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: ./chat-service/Dockerfile
+    image: paulusottoharman/team1-chat-service
+    ports:
+      - "${GRPC_PORT:-51153}:${GRPC_PORT:-51153}"
+    env_file:
+      - chat-service/.env
 
 #networks:
 #  lumos:

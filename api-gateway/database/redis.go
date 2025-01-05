@@ -141,10 +141,9 @@ func (c *Cacher) Publish(channelName string, message string) error {
 	return c.rdb.Publish(context.Background(), channelName, message).Err()
 }
 
-func (c *Cacher) Subcribe(channelName string) (*redis.Message, error) {
+func (c *Cacher) Subcribe(channelName string) *redis.PubSub {
 	subscriber := c.rdb.Subscribe(context.Background(), channelName)
-	message, err := subscriber.ReceiveMessage(context.Background())
-	return message, err
+	return subscriber
 }
 
 // Hash

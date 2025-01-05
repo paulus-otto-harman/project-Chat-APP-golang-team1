@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +11,9 @@ import (
 	"project/api-gateway/infra"
 	"syscall"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 func NewRoutes(ctx infra.ServiceContext) {
@@ -35,9 +36,9 @@ func NewRoutes(ctx infra.ServiceContext) {
 	chatRoutes := r.Group("/user/chats")
 	{
 		chatRoutes.GET("/:id/ws", ctx.Ctl.ChatHandler.Websocket)
-		chatRoutes.GET("/:id/messages", nil)
-		chatRoutes.POST("/:id/messages", nil)
-		chatRoutes.PUT("/messages/:message_id/status", nil)
+		chatRoutes.GET("/:id/messages", ctx.Ctl.ChatHandler.GetRoomMessages)
+		chatRoutes.GET("/:id/participants", ctx.Ctl.ChatHandler.GetAllParticipants)
+		chatRoutes.POST("/:id/participants", ctx.Ctl.ChatHandler.AddParticipants)
 	}
 
 	gracefulShutdown(ctx, r.Handler())
