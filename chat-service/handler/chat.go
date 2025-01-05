@@ -150,6 +150,7 @@ func (h *ChatHandler) SaveMessage(ctx context.Context, req *pb.SaveMessageReques
 
 	return &pb.SaveMessageResponse{
 		MessageId: uint64(message.ID),
+		CreatedAt: message.CreatedAt.UTC().String(),
 	}, nil
 }
 

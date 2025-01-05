@@ -26,7 +26,6 @@ func Migrate(db *gorm.DB) error {
 
 func autoMigrates(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&model.User{},
 		&model.Room{},
 		&model.RoomParticipant{},
 		&model.Message{},
@@ -38,7 +37,6 @@ func dropTables(db *gorm.DB) error {
 		&model.Message{},
 		&model.RoomParticipant{},
 		&model.Room{},
-		&model.User{},
 	)
 }
 

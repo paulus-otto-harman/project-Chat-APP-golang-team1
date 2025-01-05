@@ -25,6 +25,7 @@ message SaveMessageRequest {
 // SaveMessageResponse returns the ID of the newly created message
 message SaveMessageResponse {
   uint64 message_id = 1;
+  string created_at = 2;
 }
 
 // Request to fetch details of a room
