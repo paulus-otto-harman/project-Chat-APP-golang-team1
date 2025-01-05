@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"project/api-gateway/database"
 	"project/api-gateway/model"
 	"project/api-gateway/service"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type Handler struct {
@@ -18,7 +19,7 @@ type Handler struct {
 func NewHandler(service service.Service, logger *zap.Logger, rdb database.Cacher) *Handler {
 	return &Handler{
 		AuthHandler:    *NewAuthController(service, logger, rdb),
-		ChatHandler:    *NewChatController(service, logger),
+		ChatHandler:    *NewChatController(service, logger, rdb),
 		ContactHandler: *NewContactController(service, logger),
 		UserHandler:    *NewUserController(service, logger),
 	}
