@@ -1,6 +1,6 @@
-# Project POS App Team 1
+# Project Microservice App Chat System Team 1
 
-Project POS App is chapter 50-55 Team Project
+Project Microservice App Chat System is chapter 58-60 Team Project
 
 ## Installation
 clone this project and install dependencies
