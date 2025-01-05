@@ -3,13 +3,14 @@ package helper
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
 	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"sync"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Upload(wg *sync.WaitGroup, files []*multipart.FileHeader) ([]CdnResponse, error) {

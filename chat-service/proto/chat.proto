@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package chat;
 
-option go_package = "./proto;chat";
+option go_package = "./";
 
 // Service definition
 service ChatService {

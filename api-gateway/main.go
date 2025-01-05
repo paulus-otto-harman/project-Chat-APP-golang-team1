@@ -1,9 +1,18 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"log"
+	"project/api-gateway/infra"
+	"project/api-gateway/routes"
+)
 
 func main() {
-	router := gin.Default()
+	var err error
 
-	router.Run(":8080")
+	var ctx *infra.ServiceContext
+	if ctx, err = infra.NewServiceContext(); err != nil {
+		log.Fatal("can't init service context %w", err)
+	}
+
+	routes.NewRoutes(*ctx)
 }

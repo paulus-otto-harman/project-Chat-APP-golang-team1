@@ -3,7 +3,6 @@ package infra
 import (
 	"project/user-service/config"
 	"project/user-service/database"
-	"project/user-service/handler"
 	"project/user-service/log"
 	"project/user-service/repository"
 	"project/user-service/service"
@@ -15,7 +14,7 @@ type ServiceContext struct {
 	Cacher database.Cacher
 	Cfg    config.Config
 	Log    *zap.Logger
-	Ctl    handler.Handler
+	Svc    *service.Service
 }
 
 func NewServiceContext() (*ServiceContext, error) {
@@ -45,13 +44,10 @@ func NewServiceContext() (*ServiceContext, error) {
 	rdb := database.NewCacher(appConfig, 60*60)
 
 	// instance repository
-	repo := repository.NewRepository(db, rdb, appConfig, logger)
+	repo := repository.NewRepository(db)
 
 	// instance service
 	services := service.NewService(repo, appConfig, logger)
 
-	// instance controller
-	Ctl := handler.NewHandler(services, logger, rdb)
-
-	return &ServiceContext{Cacher: rdb, Cfg: appConfig, Ctl: *Ctl, Log: logger}, nil
+	return &ServiceContext{Cacher: rdb, Cfg: appConfig, Svc: &services, Log: logger}, nil
 }

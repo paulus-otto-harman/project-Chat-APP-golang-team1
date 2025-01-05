@@ -1,9 +1,8 @@
 package handler
 
 import (
-	"project/chat-service/service"
-
 	"go.uber.org/zap"
+	"project/chat-service/service"
 )
 
 type Handler struct {

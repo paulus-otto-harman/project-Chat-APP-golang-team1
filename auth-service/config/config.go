@@ -10,8 +10,10 @@ type Config struct {
 	AppDebug        bool
 	DB              DatabaseConfig
 	RedisConfig     RedisConfig
+	GrpcIp          string
 	GrpcPort        string
 	ShutdownTimeout int
+	RSAKeys         RSAKeys
 }
 
 type DatabaseConfig struct {
@@ -29,6 +31,11 @@ type RedisConfig struct {
 	Url      string
 	Password string
 	Prefix   string
+}
+
+type RSAKeys struct {
+	PrivateKey string
+	PublicKey  string
 }
 
 func LoadConfig() (Config, error) {
@@ -54,13 +61,13 @@ func LoadConfig() (Config, error) {
 
 	// add value to the config
 	config := Config{
-		DB: loadDatabaseConfig(),
-
+		DB:              loadDatabaseConfig(),
 		AppDebug:        viper.GetBool("APP_DEBUG"),
+		GrpcIp:          viper.GetString("GRPC_IP"),
 		GrpcPort:        viper.GetString("GRPC_PORT"),
 		ShutdownTimeout: viper.GetInt("SHUTDOWN_TIMEOUT"),
-
-		RedisConfig: loadRedisConfig(),
+		RedisConfig:     loadRedisConfig(),
+		RSAKeys:         loadRSAKeys(),
 	}
 	return config, nil
 }
@@ -85,6 +92,13 @@ func loadRedisConfig() RedisConfig {
 	}
 }
 
+func loadRSAKeys() RSAKeys {
+	return RSAKeys{
+		PrivateKey: viper.GetString("PRIVATE_KEY"),
+		PublicKey:  viper.GetString("PUBLIC_KEY"),
+	}
+}
+
 func setDefaultValues() {
 	viper.SetDefault("DB_HOST", "localhost")
 	viper.SetDefault("DB_PORT", "5432")
@@ -92,6 +106,7 @@ func setDefaultValues() {
 	viper.SetDefault("DB_PASSWORD", "admin")
 	viper.SetDefault("DB_NAME", "postgres")
 	viper.SetDefault("APP_DEBUG", true)
+	viper.SetDefault("GRPC_IP", "0.0.0.0")
 	viper.SetDefault("GRPC_PORT", ":50151")
 	viper.SetDefault("SHUTDOWN_TIMEOUT", 5)
 
