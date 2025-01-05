@@ -3,15 +3,14 @@ package handler
 import (
 	"context"
 	"errors"
-	"project/chat-service/model"
-	pb "project/chat-service/proto"
-	"project/chat-service/service"
-	"time"
-
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
+	"project/chat-service/helper"
+	"project/chat-service/model"
+	pb "project/chat-service/proto"
+	"project/chat-service/service"
 )
 
 type ChatHandler struct {
@@ -25,27 +24,6 @@ func NewChatHandler(service service.Service, logger *zap.Logger) *ChatHandler {
 		Service: service,
 		Logger:  logger,
 	}
-}
-
-// Helper function for pointer conversion
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func uintPtr(i uint64) *uint {
-	if i == 0 {
-		return nil
-	}
-	val := uint(i)
-	return &val
-}
-
-func timePtr(t time.Time) *string {
-	formatted := t.Format(time.RFC3339)
-	return &formatted
 }
 
 func (h *ChatHandler) AddRoomParticipant(ctx context.Context, req *pb.AddRoomParticipantRequest) (*pb.RoomParticipantsResponse, error) {
@@ -161,8 +139,8 @@ func (h *ChatHandler) SaveMessage(ctx context.Context, req *pb.SaveMessageReques
 		RoomID:        uint(req.RoomId),
 		SenderID:      uint(req.SenderId),
 		Content:       req.Content,
-		AttachmentURL: stringPtr(req.AttachmentUrl),
-		ReplyTo:       uintPtr(req.ReplyTo),
+		AttachmentURL: helper.Ptr(req.AttachmentUrl),
+		ReplyTo:       helper.Ptr(uint(req.ReplyTo)),
 	}
 
 	if err := h.Service.ChatService.SaveMessage(message); err != nil {
@@ -212,7 +190,7 @@ func (h *ChatHandler) GetRoomParticipants(ctx context.Context, req *pb.GetRoomRe
 func (h *ChatHandler) GetRoomMessages(ctx context.Context, req *pb.GetMessagesRequest) (*pb.PaginatedMessagesResponse, error) {
 	h.Logger.Info("Received GetRoomMessages request", zap.Uint64("roomId", req.RoomId), zap.Int("limit", int(req.Limit)), zap.Int("page", int(req.Page)))
 
-	pagnation, err := h.Service.ChatService.GetRoomMessages(uint(req.RoomId), int(req.Limit), int(req.Page))
+	pagination, err := h.Service.ChatService.GetRoomMessages(uint(req.RoomId), int(req.Limit), int(req.Page))
 	if err != nil {
 		h.Logger.Error("Error fetching room messages", zap.Uint64("roomId", req.RoomId), zap.Int("limit", int(req.Limit)), zap.Int("page", int(req.Page)), zap.Error(err))
 		return nil, err
@@ -227,7 +205,7 @@ func (h *ChatHandler) GetRoomMessages(ctx context.Context, req *pb.GetMessagesRe
 	h.Logger.Info("Successfully fetched room details", zap.Int64("roomId", int64(room.ID)))
 
 	var msgs []*pb.Message
-	for _, m := range pagnation.Messages {
+	for _, m := range pagination.Messages {
 		var attachmentURL string
 		if m.AttachmentURL != nil {
 			attachmentURL = *m.AttachmentURL
@@ -267,10 +245,10 @@ func (h *ChatHandler) GetRoomMessages(ctx context.Context, req *pb.GetMessagesRe
 		RoomName: room.Name,
 		Messages: msgs,
 		Pagination: &pb.Pagination{
-			Page:       uint32(pagnation.Page),
-			Limit:      uint32(pagnation.Limit),
-			TotalPages: uint32(pagnation.TotalPages),
-			TotalItems: uint32(pagnation.TotalItems),
+			Page:       uint32(pagination.Page),
+			Limit:      uint32(pagination.Limit),
+			TotalPages: uint32(pagination.TotalPages),
+			TotalItems: uint32(pagination.TotalItems),
 		},
 	}, nil
 }

@@ -10,6 +10,7 @@ type Config struct {
 	AppDebug        bool
 	DB              DatabaseConfig
 	RedisConfig     RedisConfig
+	GrpcIp          string
 	GrpcPort        string
 	ShutdownTimeout int
 }
@@ -54,13 +55,12 @@ func LoadConfig() (Config, error) {
 
 	// add value to the config
 	config := Config{
-		DB: loadDatabaseConfig(),
-
+		DB:              loadDatabaseConfig(),
 		AppDebug:        viper.GetBool("APP_DEBUG"),
+		GrpcIp:          viper.GetString("GRPC_IP"),
 		GrpcPort:        viper.GetString("GRPC_PORT"),
 		ShutdownTimeout: viper.GetInt("SHUTDOWN_TIMEOUT"),
-
-		RedisConfig: loadRedisConfig(),
+		RedisConfig:     loadRedisConfig(),
 	}
 	return config, nil
 }
@@ -92,7 +92,8 @@ func setDefaultValues() {
 	viper.SetDefault("DB_PASSWORD", "admin")
 	viper.SetDefault("DB_NAME", "postgres")
 	viper.SetDefault("APP_DEBUG", true)
-	viper.SetDefault("GRPC_PORT", ":50152")
+	viper.SetDefault("GRPC_IP", "0.0.0.0")
+	viper.SetDefault("GRPC_PORT", ":50153")
 	viper.SetDefault("SHUTDOWN_TIMEOUT", 5)
 
 	viper.SetDefault("DB_MIGRATE", false)

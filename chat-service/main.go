@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"project/chat-service/handler"
@@ -12,35 +13,26 @@ import (
 )
 
 func main() {
-	ctx, err := infra.NewServiceContext()
-	if err != nil {
+	var err error
+
+	var ctx *infra.ServiceContext
+	if ctx, err = infra.NewServiceContext(); err != nil {
 		log.Fatal("can't init service context %w", err)
 	}
 
-	// router := gin.Default()
-
-	// Routes
-	// router.GET("/ws", ctx.Ctl.ChatHandler.HandleWebSocket)
-	// router.GET("/chat/history", ctx.Ctl.ChatHandler.GetChatHistory)
-	// router.POST("/chat/read", ctx.Ctl.ChatHandler.MarkMessageAsRead)
-
-	// Start server
-	ctx.Log.Info("starting server on :8080")
-	// if err := router.Run(":8080"); err != nil {
-	// 	ctx.Log.Fatal("server failed to start", zap.Error(err))
-	// }
-	lis, err := net.Listen("tcp", ":8080")
-	if err != nil {
-		return
+	var listener net.Listener
+	if listener, err = net.Listen("tcp", fmt.Sprintf("%s:%s", ctx.Cfg.GrpcIp, ctx.Cfg.GrpcPort)); err != nil {
+		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
-	pb.RegisterChatServiceServer(grpcServer, &handler.ChatHandler{
+	server := grpc.NewServer()
+	pb.RegisterChatServiceServer(server, &handler.ChatHandler{
 		Service: ctx.Ctl.ChatHandler.Service,
 		Logger:  ctx.Log,
 	})
 
-	if err := grpcServer.Serve(lis); err != nil {
-		return
+	log.Printf("chat-service started %s:%s", ctx.Cfg.GrpcIp, ctx.Cfg.GrpcPort)
+	if err = server.Serve(listener); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 }
