@@ -16,7 +16,7 @@ service ChatService {
 // SaveMessageRequest for creating a new message
 message SaveMessageRequest {
   uint64 room_id = 1;
-  uint64 sender_id = 2;
+  string sender_email = 2;
   string content = 3;
   string attachment_url = 4; // Optional URL for attachments
   uint64 reply_to = 5;       // Optional reply to message ID
@@ -25,6 +25,7 @@ message SaveMessageRequest {
 // SaveMessageResponse returns the ID of the newly created message
 message SaveMessageResponse {
   uint64 message_id = 1;
+  string created_at = 2;
 }
 
 // Request to fetch details of a room
@@ -39,17 +40,18 @@ message GetMessagesRequest {
   uint32 page = 3;
 }
 
-// Response with room participants
-message RoomParticipantsResponse {
+// PaginatedMessagesResponse contains messages and pagination metadata
+message PaginatedMessagesResponse {
   uint64 room_id = 1;
   string room_name = 2;
-  repeated User users = 3;
+  repeated Message messages = 3;
+  Pagination pagination = 4;
 }
 
 // Request for creating a new room
 message CreateRoomRequest {
   string room_name = 1;
-  repeated uint64 user_ids = 2; // List of users to be added
+  repeated string user_emails = 2; // List of users to be added
 }
 
 // Response after room creation
@@ -61,16 +63,14 @@ message CreateRoomResponse {
 // Request for adding a participant to a room
 message AddRoomParticipantRequest {
   uint64 room_id = 1;
-  uint64 user_id = 2;
-  string username = 3;
+  string user_email = 2;
 }
 
-// PaginatedMessagesResponse contains messages and pagination metadata
-message PaginatedMessagesResponse {
+// Response with room participants
+message RoomParticipantsResponse {
   uint64 room_id = 1;
   string room_name = 2;
-  repeated Message messages = 3;
-  Pagination pagination = 4;
+  repeated User users = 3;
 }
 
 // Pagination metadata
@@ -90,7 +90,7 @@ message User {
 // Message definition
 message Message {
   uint64 message_id = 1;
-  uint64 sender_id = 2;
+  string sender_email = 2;
   string content = 3;
   string attachment_url = 4;
   uint64 reply_to = 5;
