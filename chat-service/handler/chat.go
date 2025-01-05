@@ -2,11 +2,9 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"gorm.io/gorm"
 	"project/chat-service/helper"
 	"project/chat-service/model"
 	pb "project/chat-service/proto"
@@ -29,7 +27,7 @@ func NewChatHandler(service service.Service, logger *zap.Logger) *ChatHandler {
 func (h *ChatHandler) AddRoomParticipant(ctx context.Context, req *pb.AddRoomParticipantRequest) (*pb.RoomParticipantsResponse, error) {
 	h.Logger.Info("Received AddRoomParticipant request",
 		zap.Uint64("roomId", req.GetRoomId()),
-		zap.Uint64("userId", req.GetUserId()),
+		zap.String("userEmail", req.UserEmail),
 	)
 
 	// Fetch room details to ensure it exists
@@ -37,17 +35,6 @@ func (h *ChatHandler) AddRoomParticipant(ctx context.Context, req *pb.AddRoomPar
 	if err != nil {
 		h.Logger.Error("Error fetching room details", zap.Error(err))
 		return nil, status.Errorf(codes.NotFound, "room not found: %v", err)
-	}
-
-	// Fetch user details to ensure user exists
-	user, err := h.Service.ChatService.GetUserDetails(uint(req.GetUserId()))
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			h.Logger.Warn("User not found", zap.Uint64("userId", req.GetUserId()))
-			return nil, status.Errorf(codes.NotFound, "user not found")
-		}
-		h.Logger.Error("Error fetching user details", zap.Error(err))
-		return nil, status.Errorf(codes.Internal, "failed to fetch user details: %v", err)
 	}
 
 	// Check if the user is already a participant in the room
@@ -58,17 +45,16 @@ func (h *ChatHandler) AddRoomParticipant(ctx context.Context, req *pb.AddRoomPar
 	}
 
 	for _, participant := range existingParticipants {
-		if participant.UserID == uint(req.GetUserId()) {
-			h.Logger.Warn("User already a participant", zap.Uint64("userId", req.GetUserId()))
+		if participant.UserEmail == req.UserEmail {
+			h.Logger.Warn("User already a participant", zap.String("email", req.UserEmail))
 			return nil, status.Errorf(codes.AlreadyExists, "user already a participant in the room")
 		}
 	}
 
 	// Add the new participant to the room
 	newParticipant := &model.RoomParticipant{
-		RoomID: uint(req.GetRoomId()),
-		UserID: uint(req.GetUserId()),
-		User:   *user, // Tambahkan user dengan username yang sesuai
+		RoomID:    uint(req.GetRoomId()),
+		UserEmail: req.UserEmail,
 	}
 	if err := h.Service.ChatService.CreateRoomParticipant(newParticipant); err != nil {
 		h.Logger.Error("Error adding participant to room", zap.Error(err))
@@ -77,8 +63,7 @@ func (h *ChatHandler) AddRoomParticipant(ctx context.Context, req *pb.AddRoomPar
 
 	h.Logger.Info("Participant added successfully",
 		zap.Uint64("roomId", req.GetRoomId()),
-		zap.Uint64("userId", req.GetUserId()),
-		zap.String("username", user.Username),
+		zap.String("userEmail", req.UserEmail),
 	)
 
 	// Fetch updated participants list
@@ -93,7 +78,7 @@ func (h *ChatHandler) AddRoomParticipant(ctx context.Context, req *pb.AddRoomPar
 	for i, p := range updatedParticipants {
 		users[i] = &pb.User{
 			UserId:   uint64(p.UserID),
-			Username: p.User.Username,
+			Username: p.UserEmail,
 		}
 	}
 
@@ -116,13 +101,13 @@ func (h *ChatHandler) CreateRoom(ctx context.Context, req *pb.CreateRoomRequest)
 		return nil, status.Errorf(codes.Internal, "failed to create room")
 	}
 
-	for _, userID := range req.UserIds {
+	for _, email := range req.UserEmails {
 		participant := &model.RoomParticipant{
-			RoomID: room.ID,
-			UserID: uint(userID),
+			RoomID:    room.ID,
+			UserEmail: email,
 		}
 		if err := h.Service.ChatService.CreateRoomParticipant(participant); err != nil {
-			h.Logger.Warn("Failed to add user", zap.Uint64("userId", userID))
+			h.Logger.Error("Failed to add user", zap.String("email", email), zap.Error(err))
 		}
 	}
 
@@ -137,7 +122,7 @@ func (h *ChatHandler) SaveMessage(ctx context.Context, req *pb.SaveMessageReques
 
 	message := &model.Message{
 		RoomID:        uint(req.RoomId),
-		SenderID:      uint(req.SenderId),
+		SenderEmail:   req.SenderEmail,
 		Content:       req.Content,
 		AttachmentURL: helper.Ptr(req.AttachmentUrl),
 		ReplyTo:       helper.Ptr(uint(req.ReplyTo)),
@@ -150,6 +135,7 @@ func (h *ChatHandler) SaveMessage(ctx context.Context, req *pb.SaveMessageReques
 
 	return &pb.SaveMessageResponse{
 		MessageId: uint64(message.ID),
+		CreatedAt: message.CreatedAt.UTC().String(),
 	}, nil
 }
 
@@ -168,7 +154,7 @@ func (h *ChatHandler) GetRoomParticipants(ctx context.Context, req *pb.GetRoomRe
 	for i, p := range participants {
 		users[i] = &pb.User{
 			UserId:   uint64(p.UserID),
-			Username: p.User.Username,
+			Username: p.UserEmail,
 		}
 	}
 
@@ -222,14 +208,14 @@ func (h *ChatHandler) GetRoomMessages(ctx context.Context, req *pb.GetMessagesRe
 
 		var readAt string
 		if m.ReadAt != nil {
-			readAt = *m.ReadAt
+			readAt = m.ReadAt.String()
 		} else {
 			readAt = ""
 		}
 
 		data := &pb.Message{
 			MessageId:     uint64(m.ID),
-			SenderId:      uint64(m.SenderID),
+			SenderEmail:   m.SenderEmail,
 			Content:       m.Content,
 			AttachmentUrl: attachmentURL,
 			ReplyTo:       uint64(replyTo),

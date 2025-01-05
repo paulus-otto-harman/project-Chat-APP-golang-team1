@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"project/chat-service/model"
+	"project/chat-service/model/seed"
 	"reflect"
 
 	"gorm.io/gorm"
@@ -26,9 +26,8 @@ func SeedAll(db *gorm.DB) error {
 
 func dataSeeds() []interface{} {
 	return []interface{}{
-		model.UserSeed(),
-		model.RoomSeed(),
-		model.RoomParticipantSeed(),
-		model.MessageSeed(),
+		seed.RoomSeed(),
+		seed.RoomParticipantSeed(),
+		seed.MessageSeed(),
 	}
 }
