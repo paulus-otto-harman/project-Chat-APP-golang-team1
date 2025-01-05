@@ -26,7 +26,6 @@ func SeedAll(db *gorm.DB) error {
 
 func dataSeeds() []interface{} {
 	return []interface{}{
-		seed.UserSeed(),
 		seed.RoomSeed(),
 		seed.RoomParticipantSeed(),
 		seed.MessageSeed(),

@@ -4,10 +4,10 @@ import "project/chat-service/model"
 
 func RoomParticipantSeed() []model.RoomParticipant {
 	return []model.RoomParticipant{
-		{RoomID: 1, UserID: 1},
-		{RoomID: 1, UserID: 2},
-		{RoomID: 2, UserID: 1},
-		{RoomID: 3, UserID: 3},
-		{RoomID: 4, UserID: 4},
+		{RoomID: 1, UserEmail: "satu@mail.com"},
+		{RoomID: 1, UserEmail: "dua@mail.com"},
+		{RoomID: 2, UserEmail: "satu@mail.com"},
+		{RoomID: 2, UserEmail: "tiga@mail.com"},
+		{RoomID: 2, UserEmail: "empat@mail.com"},
 	}
 }

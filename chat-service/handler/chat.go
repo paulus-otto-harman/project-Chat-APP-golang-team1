@@ -68,7 +68,6 @@ func (h *ChatHandler) AddRoomParticipant(ctx context.Context, req *pb.AddRoomPar
 	newParticipant := &model.RoomParticipant{
 		RoomID: uint(req.GetRoomId()),
 		UserID: uint(req.GetUserId()),
-		User:   *user, // Tambahkan user dengan username yang sesuai
 	}
 	if err := h.Service.ChatService.CreateRoomParticipant(newParticipant); err != nil {
 		h.Logger.Error("Error adding participant to room", zap.Error(err))
@@ -93,7 +92,7 @@ func (h *ChatHandler) AddRoomParticipant(ctx context.Context, req *pb.AddRoomPar
 	for i, p := range updatedParticipants {
 		users[i] = &pb.User{
 			UserId:   uint64(p.UserID),
-			Username: p.User.Username,
+			Username: p.UserEmail,
 		}
 	}
 
@@ -137,7 +136,7 @@ func (h *ChatHandler) SaveMessage(ctx context.Context, req *pb.SaveMessageReques
 
 	message := &model.Message{
 		RoomID:        uint(req.RoomId),
-		SenderID:      uint(req.SenderId),
+		SenderEmail:   req.SenderEmail,
 		Content:       req.Content,
 		AttachmentURL: helper.Ptr(req.AttachmentUrl),
 		ReplyTo:       helper.Ptr(uint(req.ReplyTo)),
@@ -169,7 +168,7 @@ func (h *ChatHandler) GetRoomParticipants(ctx context.Context, req *pb.GetRoomRe
 	for i, p := range participants {
 		users[i] = &pb.User{
 			UserId:   uint64(p.UserID),
-			Username: p.User.Username,
+			Username: p.UserEmail,
 		}
 	}
 
@@ -223,14 +222,14 @@ func (h *ChatHandler) GetRoomMessages(ctx context.Context, req *pb.GetMessagesRe
 
 		var readAt string
 		if m.ReadAt != nil {
-			readAt = *m.ReadAt
+			readAt = m.ReadAt.String()
 		} else {
 			readAt = ""
 		}
 
 		data := &pb.Message{
 			MessageId:     uint64(m.ID),
-			SenderId:      uint64(m.SenderID),
+			SenderEmail:   m.SenderEmail,
 			Content:       m.Content,
 			AttachmentUrl: attachmentURL,
 			ReplyTo:       uint64(replyTo),

@@ -17,9 +17,10 @@ service ChatService {
 message SaveMessageRequest {
   uint64 room_id = 1;
   uint64 sender_id = 2;
-  string content = 3;
-  string attachment_url = 4; // Optional URL for attachments
-  uint64 reply_to = 5;       // Optional reply to message ID
+  string sender_email = 3;
+  string content = 4;
+  string attachment_url = 5; // Optional URL for attachments
+  uint64 reply_to = 6;       // Optional reply to message ID
 }
 
 // SaveMessageResponse returns the ID of the newly created message
@@ -40,11 +41,12 @@ message GetMessagesRequest {
   uint32 page = 3;
 }
 
-// Response with room participants
-message RoomParticipantsResponse {
+// PaginatedMessagesResponse contains messages and pagination metadata
+message PaginatedMessagesResponse {
   uint64 room_id = 1;
   string room_name = 2;
-  repeated User users = 3;
+  repeated Message messages = 3;
+  Pagination pagination = 4;
 }
 
 // Request for creating a new room
@@ -66,12 +68,11 @@ message AddRoomParticipantRequest {
   string username = 3;
 }
 
-// PaginatedMessagesResponse contains messages and pagination metadata
-message PaginatedMessagesResponse {
+// Response with room participants
+message RoomParticipantsResponse {
   uint64 room_id = 1;
   string room_name = 2;
-  repeated Message messages = 3;
-  Pagination pagination = 4;
+  repeated User users = 3;
 }
 
 // Pagination metadata
@@ -91,7 +92,7 @@ message User {
 // Message definition
 message Message {
   uint64 message_id = 1;
-  uint64 sender_id = 2;
+  string sender_email = 2;
   string content = 3;
   string attachment_url = 4;
   uint64 reply_to = 5;
