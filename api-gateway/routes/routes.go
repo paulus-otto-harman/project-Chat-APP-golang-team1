@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
@@ -18,6 +20,7 @@ import (
 
 func NewRoutes(ctx infra.ServiceContext) {
 	r := gin.Default()
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.POST("/register", ctx.Ctl.AuthHandler.Register)
 	r.POST("/login", ctx.Ctl.AuthHandler.Login)

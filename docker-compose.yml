@@ -1,6 +1,6 @@
 services:
   api-gateway:
-#    platform: "linux/amd64"
+    platform: "linux/amd64"
     build:
       context: .
       dockerfile: ./api-gateway/Dockerfile
@@ -18,7 +18,7 @@ services:
       - chat-service
 
   auth-service:
-#    platform: "linux/amd64"
+    platform: "linux/amd64"
     build:
       context: .
       dockerfile: ./auth-service/Dockerfile
@@ -32,7 +32,7 @@ services:
 #      - "host.docker.internal:0.0.0.0"
 
   user-service:
-    #    platform: "linux/amd64"
+    platform: "linux/amd64"
     build:
       context: .
       dockerfile: ./user-service/Dockerfile
@@ -43,7 +43,7 @@ services:
       - user-service/.env
 
   chat-service:
-    #    platform: "linux/amd64"
+    platform: "linux/amd64"
     build:
       context: .
       dockerfile: ./chat-service/Dockerfile
