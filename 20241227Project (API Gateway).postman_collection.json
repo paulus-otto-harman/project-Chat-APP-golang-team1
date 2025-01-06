@@ -1,0 +1,331 @@
+{
+	"info": {
+		"_postman_id": "c2426321-7180-45ce-84ed-ea0b0560cfc5",
+		"name": "20241227Project (API Gateway)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39501286",
+		"_collection_link": "https://lumoshive-8617.postman.co/workspace/Lumoshive-Workspace~3742b519-d511-4017-b9e7-1abd32fcec7f/collection/39501286-c2426321-7180-45ce-84ed-ea0b0560cfc5?action=share&source=collection_link&creator=39501286"
+	},
+	"item": [
+		{
+			"name": "auth-service",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}:8181/register",
+							"host": [
+								"{{server}}"
+							],
+							"port": "8181",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"tes@mailinator.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}:8181/login",
+							"host": [
+								"{{server}}"
+							],
+							"port": "8181",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "validate OTP user1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const { status, data } = pm.response.json()",
+									"console.log(status, data)",
+									"if(status) {",
+									"    const { token } = data",
+									"    pm.globals.set(\"token\", token)",
+									"    console.log(token)",
+									"}",
+									"",
+									"if(!status) {",
+									"    pm.globals.set(\"token\", \"\")",
+									"    console.log(\"empty token\")",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"otp\":\"1111\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}:8181/otp/3262d24b-e0b2-42e5-b08f-b694bfcd3171",
+							"host": [
+								"{{server}}"
+							],
+							"port": "8181",
+							"path": [
+								"otp",
+								"3262d24b-e0b2-42e5-b08f-b694bfcd3171"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "validate OTP user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const { status, data } = pm.response.json()",
+									"console.log(status, data)",
+									"if(status) {",
+									"    const { token } = data",
+									"    pm.globals.set(\"token\", token)",
+									"    console.log(token)",
+									"}",
+									"",
+									"if(!status) {",
+									"    pm.globals.set(\"token\", \"\")",
+									"    console.log(\"empty token\")",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"otp\":\"1111\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}:8181/otp/3262d24b-e0b2-42e5-b08f-b694bfcd3171",
+							"host": [
+								"{{server}}"
+							],
+							"port": "8181",
+							"path": [
+								"otp",
+								"3262d24b-e0b2-42e5-b08f-b694bfcd3171"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user-service",
+			"item": [
+				{
+					"name": "profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}:8181/profile",
+							"host": [
+								"{{server}}"
+							],
+							"port": "8181",
+							"path": [
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "chat-service",
+			"item": [
+				{
+					"name": "message history",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}:8181/user/chats/1/messages",
+							"host": [
+								"{{server}}"
+							],
+							"port": "8181",
+							"path": [
+								"user",
+								"chats",
+								"1",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "room/channel participants",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}:8181/user/chats/1/participants",
+							"host": [
+								"{{server}}"
+							],
+							"port": "8181",
+							"path": [
+								"user",
+								"chats",
+								"1",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add participant",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test2@mail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}:8181/user/chats/1/participants",
+							"host": [
+								"{{server}}"
+							],
+							"port": "8181",
+							"path": [
+								"user",
+								"chats",
+								"1",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
