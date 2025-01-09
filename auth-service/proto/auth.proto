@@ -5,36 +5,16 @@ package auth;
 option go_package = "./";
 
 service AuthService {
-  rpc Login (LoginRequest) returns (LoginResponse);
-  rpc Register (RegisterRequest) returns (RegisterResponse);
-  rpc GetOtp (GetOtpRequest) returns (GetOtpResponse);
+  rpc CreateOtp (CreateOtpRequest) returns (CreateOtpResponse);
   rpc ValidateOtp (ValidateOtpRequest) returns (ValidateOtpResponse);
   rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
 }
 
-message LoginRequest {
+message CreateOtpRequest {
   string email = 1;
 }
 
-message LoginResponse {
-  string id = 1;
-  string otp = 2;
-}
-
-message RegisterRequest {
-  string email = 1;
-}
-
-message RegisterResponse {
-  string id = 1;
-  string otp = 2;
-}
-
-message GetOtpRequest {
-  string email = 1;
-}
-
-message GetOtpResponse {
+message CreateOtpResponse {
   string id = 1;
   string otp = 2;
 }

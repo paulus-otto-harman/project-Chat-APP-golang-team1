@@ -3,6 +3,7 @@ package repository
 import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"project/auth-service/model"
 )
 
@@ -20,7 +21,10 @@ func (repo *OtpRepository) Create(otp *model.Otp) error {
 }
 
 func (repo *OtpRepository) Update(criteria model.Otp) (*model.Otp, error) {
-	result := repo.db.Model(&model.Otp{}).
+	otp := model.Otp{}
+
+	result := repo.db.Model(&otp).
+		Clauses(clause.Returning{Columns: []clause.Column{{Name: "user_email"}}}).
 		Where("otps.id = ?", criteria.ID).
 		Where("otps.otp = ?", criteria.Otp).
 		Where("validated_at IS NULL").
@@ -34,7 +38,5 @@ func (repo *OtpRepository) Update(criteria model.Otp) (*model.Otp, error) {
 		return nil, gorm.ErrRecordNotFound
 	}
 
-	otp := model.Otp{}
-	repo.db.Preload("User").First(&otp, "id=?", criteria.ID)
 	return &otp, nil
 }

@@ -27,48 +27,16 @@ func NewAuthService(repo repository.Repository, log *zap.Logger, rsaKeys config.
 	return &AuthService{repo: repo, log: log, rsaKeys: rsaKeys}
 }
 
-func (s *AuthService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	user := model.User{Email: req.Email}
-	if err := s.repo.Auth.Create(&user); err != nil {
-		return nil, err
-	}
-
-	otp, err := generateOtp(user.ID, s.repo.Otp)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.RegisterResponse{Id: otp.ID.String(), Otp: otp.Otp}, nil
-}
-
-func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
-	user, err := s.repo.Auth.Get(model.User{Email: req.Email})
-	if err != nil {
-		return nil, err
-	}
-
-	otp, err := generateOtp(user.ID, s.repo.Otp)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.LoginResponse{Id: otp.ID.String(), Otp: otp.Otp}, nil
-}
-
-func generateOtp(userID uint, otpDB repository.OtpRepository) (*model.Otp, error) {
+func (s *AuthService) CreateOtp(ctx context.Context, req *pb.CreateOtpRequest) (*pb.CreateOtpResponse, error) {
 	seed := time.Now().UnixNano()
 	rng := rand.New(rand.NewSource(seed))
 	oneTimePassword := fmt.Sprintf("%04d", rng.Intn(10000)) // Generate 4 digit OTP
 
-	otp := model.Otp{UserID: userID, Otp: oneTimePassword}
-	if err := otpDB.Create(&otp); err != nil {
+	otp := model.Otp{UserEmail: req.Email, Otp: oneTimePassword}
+	if err := s.repo.Otp.Create(&otp); err != nil {
 		return nil, err
 	}
-	return &otp, nil
-}
-
-func (s *AuthService) GetOtp(ctx context.Context, req *pb.GetOtpRequest) (*pb.GetOtpResponse, error) {
-	return nil, nil
+	return &pb.CreateOtpResponse{Otp: otp.Otp, Id: otp.ID.String()}, nil
 }
 
 func (s *AuthService) ValidateOtp(ctx context.Context, req *pb.ValidateOtpRequest) (*pb.ValidateOtpResponse, error) {
@@ -90,8 +58,7 @@ func (s *AuthService) ValidateOtp(ctx context.Context, req *pb.ValidateOtpReques
 
 	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &customClaims{
-		UserID:         otp.User.ID,
-		Email:          otp.User.Email,
+		Email:          otp.UserEmail,
 		IP:             "",
 		StandardClaims: jwt.StandardClaims{ExpiresAt: expirationTime.Unix()},
 	}
@@ -138,8 +105,7 @@ func (s *AuthService) ValidateToken(ctx context.Context, req *pb.ValidateTokenRe
 }
 
 type customClaims struct {
-	UserID uint   `json:"id"`
-	Email  string `json:"email"`
-	IP     string `json:"ip"`
+	Email string `json:"email"`
+	IP    string `json:"ip"`
 	jwt.StandardClaims
 }

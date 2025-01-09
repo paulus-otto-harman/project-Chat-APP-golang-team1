@@ -29,7 +29,6 @@ func Migrate(db *gorm.DB) error {
 
 func autoMigrates(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&model.User{},
 		&model.Otp{},
 	)
 }
@@ -37,7 +36,6 @@ func autoMigrates(db *gorm.DB) error {
 func dropTables(db *gorm.DB) error {
 	return db.Migrator().DropTable(
 		&model.Otp{},
-		&model.User{},
 	)
 }
 
@@ -55,8 +53,6 @@ func createViews(db *gorm.DB) error {
 
 func createCompositeIndexes(db *gorm.DB) error {
 	var err error
-	if err = db.Exec(model.UserEmailUniqueIndex()).Error; err != nil {
-		return err
-	}
+
 	return err
 }

@@ -19,9 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Login_FullMethodName         = "/auth.AuthService/Login"
-	AuthService_Register_FullMethodName      = "/auth.AuthService/Register"
-	AuthService_GetOtp_FullMethodName        = "/auth.AuthService/GetOtp"
+	AuthService_CreateOtp_FullMethodName     = "/auth.AuthService/CreateOtp"
 	AuthService_ValidateOtp_FullMethodName   = "/auth.AuthService/ValidateOtp"
 	AuthService_ValidateToken_FullMethodName = "/auth.AuthService/ValidateToken"
 )
@@ -30,9 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
-	GetOtp(ctx context.Context, in *GetOtpRequest, opts ...grpc.CallOption) (*GetOtpResponse, error)
+	CreateOtp(ctx context.Context, in *CreateOtpRequest, opts ...grpc.CallOption) (*CreateOtpResponse, error)
 	ValidateOtp(ctx context.Context, in *ValidateOtpRequest, opts ...grpc.CallOption) (*ValidateOtpResponse, error)
 	ValidateToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
 }
@@ -45,30 +41,10 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+func (c *authServiceClient) CreateOtp(ctx context.Context, in *CreateOtpRequest, opts ...grpc.CallOption) (*CreateOtpResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, AuthService_Login_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RegisterResponse)
-	err := c.cc.Invoke(ctx, AuthService_Register_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) GetOtp(ctx context.Context, in *GetOtpRequest, opts ...grpc.CallOption) (*GetOtpResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetOtpResponse)
-	err := c.cc.Invoke(ctx, AuthService_GetOtp_FullMethodName, in, out, cOpts...)
+	out := new(CreateOtpResponse)
+	err := c.cc.Invoke(ctx, AuthService_CreateOtp_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +75,7 @@ func (c *authServiceClient) ValidateToken(ctx context.Context, in *ValidateToken
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
-	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
-	GetOtp(context.Context, *GetOtpRequest) (*GetOtpResponse, error)
+	CreateOtp(context.Context, *CreateOtpRequest) (*CreateOtpResponse, error)
 	ValidateOtp(context.Context, *ValidateOtpRequest) (*ValidateOtpResponse, error)
 	ValidateToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
@@ -114,14 +88,8 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
-func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
-}
-func (UnimplementedAuthServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
-}
-func (UnimplementedAuthServiceServer) GetOtp(context.Context, *GetOtpRequest) (*GetOtpResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOtp not implemented")
+func (UnimplementedAuthServiceServer) CreateOtp(context.Context, *CreateOtpRequest) (*CreateOtpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOtp not implemented")
 }
 func (UnimplementedAuthServiceServer) ValidateOtp(context.Context, *ValidateOtpRequest) (*ValidateOtpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateOtp not implemented")
@@ -150,56 +118,20 @@ func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
 	s.RegisterService(&AuthService_ServiceDesc, srv)
 }
 
-func _AuthService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+func _AuthService_CreateOtp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOtpRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).Login(ctx, in)
+		return srv.(AuthServiceServer).CreateOtp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_Login_FullMethodName,
+		FullMethod: AuthService_CreateOtp_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Login(ctx, req.(*LoginRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).Register(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_Register_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Register(ctx, req.(*RegisterRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_GetOtp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetOtpRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).GetOtp(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_GetOtp_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetOtp(ctx, req.(*GetOtpRequest))
+		return srv.(AuthServiceServer).CreateOtp(ctx, req.(*CreateOtpRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -248,16 +180,8 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Login",
-			Handler:    _AuthService_Login_Handler,
-		},
-		{
-			MethodName: "Register",
-			Handler:    _AuthService_Register_Handler,
-		},
-		{
-			MethodName: "GetOtp",
-			Handler:    _AuthService_GetOtp_Handler,
+			MethodName: "CreateOtp",
+			Handler:    _AuthService_CreateOtp_Handler,
 		},
 		{
 			MethodName: "ValidateOtp",
