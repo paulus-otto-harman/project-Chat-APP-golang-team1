@@ -12,10 +12,9 @@ import (
 )
 
 type ServiceContext struct {
-	Cacher database.Cacher
-	Cfg    config.Config
-	Log    *zap.Logger
-	Ctl    handler.Handler
+	Cfg config.Config
+	Log *zap.Logger
+	Ctl handler.Handler
 }
 
 func NewServiceContext() (*ServiceContext, error) {
@@ -42,8 +41,6 @@ func NewServiceContext() (*ServiceContext, error) {
 		return handlerError(err)
 	}
 
-	rdb := database.NewCacher(appConfig, 60*60)
-
 	// instance repository
 	repo := repository.NewRepository(db, logger)
 
@@ -53,5 +50,5 @@ func NewServiceContext() (*ServiceContext, error) {
 	// instance controller
 	Ctl := handler.NewHandler(services, logger)
 
-	return &ServiceContext{Cacher: rdb, Cfg: appConfig, Ctl: *Ctl, Log: logger}, nil
+	return &ServiceContext{Cfg: appConfig, Ctl: *Ctl, Log: logger}, nil
 }
