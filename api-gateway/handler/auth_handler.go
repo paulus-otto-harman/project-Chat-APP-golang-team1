@@ -20,7 +20,7 @@ func NewAuthController(service service.Service, logger *zap.Logger, cacher datab
 	return &AuthController{service, logger, cacher}
 }
 
-func (ctrl *AuthController) Register(c *gin.Context) {
+func (ctrl *AuthController) Authenticate(c *gin.Context) {
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		BadResponse(c, err.Error(), http.StatusBadRequest)
@@ -28,11 +28,11 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	}
 
 	if err := ctrl.service.User.CreateUser(&user); err != nil {
-		BadResponse(c, "Email Already Registered", http.StatusBadRequest)
+		BadResponse(c, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	res, err := ctrl.service.Auth.Register(user)
+	res, err := ctrl.service.Auth.GetOtp(user)
 	if err != nil {
 		BadResponse(c, err.Error(), http.StatusInternalServerError)
 		return
@@ -52,7 +52,6 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 // Login endpoint
 // @Summary Login
 // @Description authenticate user
-
 // @Tags Auth
 // @Accept  json
 // @Produce  json

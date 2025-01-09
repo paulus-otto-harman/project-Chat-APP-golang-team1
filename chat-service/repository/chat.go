@@ -2,7 +2,6 @@ package repository
 
 import (
 	"project/chat-service/config"
-	"project/chat-service/database"
 	"project/chat-service/model"
 
 	"go.uber.org/zap"
@@ -21,7 +20,6 @@ type ChatRepository interface {
 
 type chatRepository struct {
 	DB     *gorm.DB
-	Cacher database.Cacher
 	Config config.Config
 	Log    *zap.Logger
 }

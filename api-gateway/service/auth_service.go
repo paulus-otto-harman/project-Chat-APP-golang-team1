@@ -11,6 +11,7 @@ import (
 type AuthService interface {
 	Register(user model.User) (*pbAuth.RegisterResponse, error)
 	Login(user model.User) (*pbAuth.LoginResponse, error)
+	GetOtp(user model.User) (*pbAuth.GetOtpResponse, error)
 	ValidateOtp(otp model.Otp) (*string, error)
 }
 type authService struct {
@@ -45,6 +46,21 @@ func (s *authService) Login(user model.User) (*pbAuth.LoginResponse, error) {
 
 	req := &pbAuth.LoginRequest{Email: user.Email}
 	res, err := authClient.Login(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (s *authService) GetOtp(user model.User) (*pbAuth.GetOtpResponse, error) {
+	authConn := helper.MustConnect(s.serviceUrl)
+	defer authConn.Close()
+
+	authClient := pbAuth.NewAuthServiceClient(authConn)
+
+	req := &pbAuth.GetOtpRequest{Email: user.Email}
+	res, err := authClient.GetOtp(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}

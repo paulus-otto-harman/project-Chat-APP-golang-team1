@@ -22,8 +22,7 @@ func NewRoutes(ctx infra.ServiceContext) {
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.POST("/register", ctx.Ctl.AuthHandler.Register)
-	r.POST("/login", ctx.Ctl.AuthHandler.Login)
+	r.POST("/otps", ctx.Ctl.AuthHandler.Authenticate)
 	r.PUT("/otp/:id", ctx.Ctl.AuthHandler.ValidateOtp)
 
 	r.Use(ctx.Middleware.Auth())

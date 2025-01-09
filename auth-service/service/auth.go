@@ -67,6 +67,10 @@ func generateOtp(userID uint, otpDB repository.OtpRepository) (*model.Otp, error
 	return &otp, nil
 }
 
+func (s *AuthService) GetOtp(ctx context.Context, req *pb.GetOtpRequest) (*pb.GetOtpResponse, error) {
+	return nil, nil
+}
+
 func (s *AuthService) ValidateOtp(ctx context.Context, req *pb.ValidateOtpRequest) (*pb.ValidateOtpResponse, error) {
 	OtpID, err := uuid.Parse(req.Id)
 	if err != nil {

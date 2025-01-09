@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	AuthService_Login_FullMethodName         = "/auth.AuthService/Login"
 	AuthService_Register_FullMethodName      = "/auth.AuthService/Register"
+	AuthService_GetOtp_FullMethodName        = "/auth.AuthService/GetOtp"
 	AuthService_ValidateOtp_FullMethodName   = "/auth.AuthService/ValidateOtp"
 	AuthService_ValidateToken_FullMethodName = "/auth.AuthService/ValidateToken"
 )
@@ -31,6 +32,7 @@ const (
 type AuthServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	GetOtp(ctx context.Context, in *GetOtpRequest, opts ...grpc.CallOption) (*GetOtpResponse, error)
 	ValidateOtp(ctx context.Context, in *ValidateOtpRequest, opts ...grpc.CallOption) (*ValidateOtpResponse, error)
 	ValidateToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
 }
@@ -63,6 +65,16 @@ func (c *authServiceClient) Register(ctx context.Context, in *RegisterRequest, o
 	return out, nil
 }
 
+func (c *authServiceClient) GetOtp(ctx context.Context, in *GetOtpRequest, opts ...grpc.CallOption) (*GetOtpResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetOtpResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetOtp_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) ValidateOtp(ctx context.Context, in *ValidateOtpRequest, opts ...grpc.CallOption) (*ValidateOtpResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ValidateOtpResponse)
@@ -89,6 +101,7 @@ func (c *authServiceClient) ValidateToken(ctx context.Context, in *ValidateToken
 type AuthServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	GetOtp(context.Context, *GetOtpRequest) (*GetOtpResponse, error)
 	ValidateOtp(context.Context, *ValidateOtpRequest) (*ValidateOtpResponse, error)
 	ValidateToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
@@ -106,6 +119,9 @@ func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*Lo
 }
 func (UnimplementedAuthServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedAuthServiceServer) GetOtp(context.Context, *GetOtpRequest) (*GetOtpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOtp not implemented")
 }
 func (UnimplementedAuthServiceServer) ValidateOtp(context.Context, *ValidateOtpRequest) (*ValidateOtpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateOtp not implemented")
@@ -170,6 +186,24 @@ func _AuthService_Register_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetOtp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOtpRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetOtp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetOtp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetOtp(ctx, req.(*GetOtpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_ValidateOtp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ValidateOtpRequest)
 	if err := dec(in); err != nil {
@@ -220,6 +254,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Register",
 			Handler:    _AuthService_Register_Handler,
+		},
+		{
+			MethodName: "GetOtp",
+			Handler:    _AuthService_GetOtp_Handler,
 		},
 		{
 			MethodName: "ValidateOtp",

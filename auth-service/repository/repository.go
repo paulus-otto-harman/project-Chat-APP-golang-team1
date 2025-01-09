@@ -1,9 +1,6 @@
 package repository
 
 import (
-	"project/auth-service/config"
-	"project/auth-service/database"
-
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -13,7 +10,7 @@ type Repository struct {
 	Otp  OtpRepository
 }
 
-func NewRepository(db *gorm.DB, cacher database.Cacher, config config.Config, log *zap.Logger) Repository {
+func NewRepository(db *gorm.DB, log *zap.Logger) Repository {
 	return Repository{
 		Auth: *NewAuthRepository(db, log),
 		Otp:  *NewOtpRepository(db, log),

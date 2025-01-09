@@ -45,12 +45,12 @@ func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	resGrpc, err := ctrl.service.User.UpdateUser(userProfile)
+	_, err := ctrl.service.User.UpdateUser(userProfile)
 	if err != nil {
 		log.Println(err)
 		BadResponse(c, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	GoodResponseWithData(c, resGrpc.Message, http.StatusOK, nil)
+	GoodResponseWithData(c, "profile updated", http.StatusOK, nil)
 }
