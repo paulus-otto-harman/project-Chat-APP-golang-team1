@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"project/user-service/model"
 	pb "project/user-service/proto"
 	"project/user-service/repository"
@@ -47,17 +48,17 @@ func (s *UserService) GetAllUsers(ctx context.Context, req *pb.Empty) (*pb.Users
 	return &pb.UsersList{Users: usersPb}, nil
 }
 
-func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponseSuccess, error) {
+func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*emptypb.Empty, error) {
 	var user model.User
 	user.Email = req.Email
 	err := s.repo.User.Insert(&user)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.UserResponseSuccess{Message: "Create User Succes"}, nil
+	return &emptypb.Empty{}, nil
 }
 
-func (s *UserService) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UserResponseSuccess, error) {
+func (s *UserService) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UserResponse, error) {
 	user := model.User{
 		Email:     req.Email,
 		FirstName: req.FirstName,
@@ -67,5 +68,5 @@ func (s *UserService) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.UserResponseSuccess{Message: "Update Profile Success"}, nil
+	return &pb.UserResponse{}, nil
 }

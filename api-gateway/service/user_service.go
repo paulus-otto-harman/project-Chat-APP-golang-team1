@@ -10,9 +10,9 @@ import (
 )
 
 type UserService interface {
-	CreateUser(user model.User) (*pbUser.UserResponseSuccess, error)
+	CreateUser(user *model.User) error
 	GetAllUsers(filter string) (*pbUser.UsersList, error)
-	UpdateUser(user model.User) (*pbUser.UserResponseSuccess, error)
+	UpdateUser(user model.User) (*pbUser.UserResponse, error)
 }
 
 type userService struct {
@@ -24,19 +24,18 @@ func NewUserService(serviceUrl string, log *zap.Logger) UserService {
 	return &userService{serviceUrl, log}
 }
 
-func (s *userService) CreateUser(user model.User) (*pbUser.UserResponseSuccess, error) {
+func (s *userService) CreateUser(user *model.User) error {
 	userConn := helper.MustConnect(s.serviceUrl)
 	defer userConn.Close()
 
 	userClient := pbUser.NewUserServiceClient(userConn)
 
 	req := &pbUser.CreateUserRequest{Email: user.Email}
-	res, err := userClient.CreateUser(context.Background(), req)
-	if err != nil {
-		return nil, err
+	if _, err := userClient.CreateUser(context.Background(), req); err != nil {
+		return err
 	}
 
-	return res, nil
+	return nil
 }
 
 func (s *userService) GetAllUsers(filter string) (*pbUser.UsersList, error) {
@@ -57,7 +56,7 @@ func (s *userService) GetAllUsers(filter string) (*pbUser.UsersList, error) {
 	return res, nil
 }
 
-func (s *userService) UpdateUser(user model.User) (*pbUser.UserResponseSuccess, error) {
+func (s *userService) UpdateUser(user model.User) (*pbUser.UserResponse, error) {
 	userConn := helper.MustConnect(s.serviceUrl)
 	defer userConn.Close()
 

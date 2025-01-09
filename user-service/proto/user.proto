@@ -2,12 +2,14 @@ syntax = "proto3";
 
 package user;
 
+import "google/protobuf/empty.proto";
+
 option go_package = "./";
 
 service UserService {
     rpc GetAllUsers (Empty) returns (UsersList);
-    rpc CreateUser (CreateUserRequest) returns (UserResponseSuccess);
-    rpc UpdateUser (UpdateUserRequest) returns (UserResponseSuccess);
+    rpc CreateUser (CreateUserRequest) returns (google.protobuf.Empty);
+    rpc UpdateUser (UpdateUserRequest) returns (UserResponse);
 }
 
 message CreateUserRequest {
@@ -20,8 +22,8 @@ message UpdateUserRequest {
     string last_name = 3;
 }
 
-message UserResponseSuccess {
-    string message = 1;
+message UserResponse {
+    bool success = 1;
 }
 
 message User {

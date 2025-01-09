@@ -13,13 +13,13 @@ func (User) TableName() string {
 
 func Seed() []User {
 	return []User{
-		{Email: "satu@mailinator.com", FirstName: "John", LastName: "Doe"},
-		{Email: "dua@mailinator.com", FirstName: "John", LastName: "Doe"},
-		{Email: "tiga@mailinator.com", FirstName: "John", LastName: "Doe"},
-		{Email: "empat@mailinator.com", FirstName: "John", LastName: "Doe"},
-		{Email: "lima@mailinator.com", FirstName: "John", LastName: "Doe"},
-		{Email: "enam@mailinator.com", FirstName: "John", LastName: "Doe"},
-		{Email: "tujuh@mailinator.com", FirstName: "John", LastName: "Doe", IsOnline: true},
-		{Email: "delapan@mailinator.com", FirstName: "John", LastName: "Doe", IsOnline: true},
+		{Email: "satu@mailinator.com", FirstName: "Satu", LastName: "Satu"},
+		{Email: "dua@mailinator.com", FirstName: "Dua", LastName: "Dua"},
+		{Email: "tiga@mailinator.com", FirstName: "Tiga", LastName: "Tiga"},
+		{Email: "empat@mailinator.com", FirstName: "Empat", LastName: "Empat"},
+		{Email: "lima@mailinator.com", FirstName: "Lima", LastName: "Lima"},
+		{Email: "enam@mailinator.com", FirstName: "Enam", LastName: "Enam"},
+		{Email: "tujuh@mailinator.com", FirstName: "Tujuh", LastName: "Tujuh", IsOnline: true},
+		{Email: "delapan@mailinator.com", FirstName: "Delapan", LastName: "Delapan", IsOnline: true},
 	}
 }

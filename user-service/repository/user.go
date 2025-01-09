@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"gorm.io/gorm/clause"
 	"log"
 	"project/user-service/model"
 
@@ -39,10 +40,10 @@ func (r *userRepository) GetAllUsers(filter bool) ([]model.User, error) {
 	return users, nil
 }
 func (repo *userRepository) Insert(user *model.User) error {
-	err := repo.db.Create(&user).Error
+	err := repo.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&user).Error
 	if err != nil {
 		log.Println(err)
-		return errors.New("Already Registered")
+		return err
 	}
 	return nil
 }
