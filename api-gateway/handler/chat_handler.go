@@ -47,6 +47,7 @@ func (ctrl *ChatController) Websocket(c *gin.Context) {
 	defer conn.Close()
 	roomId := c.Param("id")
 	uintRoomId, err := helper.Uint(roomId)
+	message.Sender = username
 	message.RoomId = uintRoomId
 	if err != nil {
 		log.Println("ERROR PARSING UINT")
