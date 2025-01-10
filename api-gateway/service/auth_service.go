@@ -9,9 +9,7 @@ import (
 )
 
 type AuthService interface {
-	Register(user model.User) (*pbAuth.RegisterResponse, error)
-	Login(user model.User) (*pbAuth.LoginResponse, error)
-	GetOtp(user model.User) (*pbAuth.GetOtpResponse, error)
+	GetOtp(user model.User) (*pbAuth.CreateOtpResponse, error)
 	ValidateOtp(otp model.Otp) (*string, error)
 }
 type authService struct {
@@ -23,44 +21,14 @@ func NewAuthService(serviceUrl string, log *zap.Logger) AuthService {
 	return &authService{serviceUrl, log}
 }
 
-func (s *authService) Register(user model.User) (*pbAuth.RegisterResponse, error) {
+func (s *authService) GetOtp(user model.User) (*pbAuth.CreateOtpResponse, error) {
 	authConn := helper.MustConnect(s.serviceUrl)
 	defer authConn.Close()
 
 	authClient := pbAuth.NewAuthServiceClient(authConn)
 
-	req := &pbAuth.RegisterRequest{Email: user.Email}
-	res, err := authClient.Register(context.Background(), req)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func (s *authService) Login(user model.User) (*pbAuth.LoginResponse, error) {
-	authConn := helper.MustConnect(s.serviceUrl)
-	defer authConn.Close()
-
-	authClient := pbAuth.NewAuthServiceClient(authConn)
-
-	req := &pbAuth.LoginRequest{Email: user.Email}
-	res, err := authClient.Login(context.Background(), req)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func (s *authService) GetOtp(user model.User) (*pbAuth.GetOtpResponse, error) {
-	authConn := helper.MustConnect(s.serviceUrl)
-	defer authConn.Close()
-
-	authClient := pbAuth.NewAuthServiceClient(authConn)
-
-	req := &pbAuth.GetOtpRequest{Email: user.Email}
-	res, err := authClient.GetOtp(context.Background(), req)
+	req := &pbAuth.CreateOtpRequest{Email: user.Email}
+	res, err := authClient.CreateOtp(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +44,7 @@ func (s *authService) ValidateOtp(otp model.Otp) (*string, error) {
 	req := &pbAuth.ValidateOtpRequest{Id: otp.ID.String(), Otp: otp.Otp}
 	res, err := authClient.ValidateOtp(context.Background(), req)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	return &res.Token, nil
 }

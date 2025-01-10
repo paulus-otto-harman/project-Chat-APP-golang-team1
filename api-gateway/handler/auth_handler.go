@@ -20,7 +20,7 @@ func NewAuthController(service service.Service, logger *zap.Logger, cacher datab
 	return &AuthController{service, logger, cacher}
 }
 
-func (ctrl *AuthController) Authenticate(c *gin.Context) {
+func (ctrl *AuthController) RequestOTP(c *gin.Context) {
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		BadResponse(c, err.Error(), http.StatusBadRequest)
@@ -38,7 +38,7 @@ func (ctrl *AuthController) Authenticate(c *gin.Context) {
 		return
 	}
 
-	emailData := EmailData{ID: uuid.New(), OTP: res.Otp}
+	emailData := EmailData{ID: uuid.MustParse(res.Id), OTP: res.Otp}
 	_, err = ctrl.service.Email.Send(user.Email, "Chateo OTP", "otp", emailData)
 	if err != nil {
 		ctrl.logger.Error("failed to send email", zap.Error(err))
@@ -47,41 +47,6 @@ func (ctrl *AuthController) Authenticate(c *gin.Context) {
 	}
 
 	GoodResponseWithData(c, "registration success. otp sent", http.StatusOK, nil)
-}
-
-// Login endpoint
-// @Summary Login
-// @Description authenticate user
-// @Tags Auth
-// @Accept  json
-// @Produce  json
-// @Param domain.Login body domain.Login true "input user credential"
-// @Success 200 {object} handler.Response "user authenticated"
-// @Failure 401 {object} handler.Response "invalid username and/or password"
-// @Failure 500 {object} handler.Response "server error"
-// @Router  /login [post]
-func (ctrl *AuthController) Login(c *gin.Context) {
-	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
-		BadResponse(c, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	res, err := ctrl.service.Auth.Login(user)
-	if err != nil {
-		BadResponse(c, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	emailData := EmailData{ID: uuid.New(), OTP: res.Otp}
-	_, err = ctrl.service.Email.Send(user.Email, "Chateo OTP", "otp", emailData)
-	if err != nil {
-		ctrl.logger.Error("failed to send email", zap.Error(err))
-		BadResponse(c, "failed to send email", http.StatusInternalServerError)
-		return
-	}
-
-	GoodResponseWithData(c, "login success. otp sent", http.StatusOK, nil)
 }
 
 func (ctrl *AuthController) ValidateOtp(c *gin.Context) {
