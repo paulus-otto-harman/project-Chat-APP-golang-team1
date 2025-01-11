@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"project/api-gateway/database"
@@ -27,71 +26,72 @@ var upgrader = websocket.Upgrader{
 		return true
 	},
 }
-var broadcast = make(chan string)
 
 func NewChatController(service service.Service, logger *zap.Logger, rdb database.Cacher) *ChatController {
 	return &ChatController{service, logger, rdb}
 }
 
 func (ctrl *ChatController) Websocket(c *gin.Context) {
-	var message model.Message
-	username := c.MustGet("email").(string)
+	username := c.GetString("email")
 	if username == "" {
 		BadResponse(c, "unauthorized", http.StatusUnauthorized)
+		return
 	}
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println("WebSocket upgrade failed:", err)
+		BadResponse(c, "webSocket upgrade failed", http.StatusInternalServerError)
 		return
 	}
 	defer conn.Close()
 	roomId := c.Param("id")
-	uintRoomId, err := helper.Uint(roomId)
-	message.Sender = username
-	message.RoomId = uintRoomId
-	if err != nil {
-		log.Println("ERROR PARSING UINT")
-		return
-	}
 	pubsub := ctrl.rdb.Subcribe("room:" + roomId)
 	defer pubsub.Close()
-	go func() {
-		for {
-			payload, err := pubsub.ReceiveMessage(context.Background())
-			if err != nil {
-				log.Println("Failed Received Message Redis: ", err)
-				return
-			}
-			// log.Println(payload.Payload, "++++++")
-			// log.Printf("%+v<<<<<<--------\n", message)
-			err = conn.WriteMessage(websocket.TextMessage, []byte(payload.Payload))
-			if err != nil {
-				log.Println("Write error:", err)
-				break
-			}
-		}
-	}()
+
 	for {
-		_, msg, err := conn.ReadMessage()
+		payload, err := pubsub.ReceiveMessage(context.Background())
 		if err != nil {
-			log.Println("Read error:", err)
-			break
-		}
-		chat := string(msg)
-		err = json.Unmarshal(msg, &message)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		err = ctrl.service.Chat.SaveMessage(&message)
-		if err != nil {
-			log.Println(err, "DARI SAVE MESSAGE HANDLER")
+			log.Println("failed to received message from redis: ", err.Error())
 			return
 		}
 
-		ctrl.rdb.Publish("room:"+roomId, chat)
+		if err = conn.WriteMessage(websocket.TextMessage, []byte(payload.Payload)); err != nil {
+			log.Println("Write error:", err)
+			break
+		}
 	}
+
 }
+
+func (ctrl *ChatController) NewMessage(c *gin.Context) {
+	message := model.Message{Sender: c.GetString("email")}
+	if message.Sender == "" {
+		BadResponse(c, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	roomId := c.Param("id")
+	uintRoomId, err := helper.Uint(roomId)
+	if err != nil {
+		BadResponse(c, "invalid chat id", http.StatusBadRequest)
+		return
+	}
+	message.RoomId = uintRoomId
+
+	if err = c.ShouldBindJSON(&message); err != nil {
+		BadResponse(c, "invalid chat content", http.StatusUnprocessableEntity)
+		return
+	}
+
+	if err = ctrl.service.Chat.SaveMessage(&message); err != nil {
+		log.Println(err, "error from grpc save message")
+		return
+	}
+
+	ctrl.rdb.Publish("room:"+roomId, message.Content)
+
+	GoodResponseWithData(c, "message sent", http.StatusOK, message)
+}
+
 func (ctrl *ChatController) GetRoomMessages(c *gin.Context) {
 	query := c.Query("page")
 	var page uint
@@ -116,6 +116,7 @@ func (ctrl *ChatController) GetRoomMessages(c *gin.Context) {
 	}
 	GoodResponseWithData(c, "Get History Message Succes", http.StatusOK, res)
 }
+
 func (ctrl *ChatController) GetAllParticipants(c *gin.Context) {
 	param := c.Param("id")
 	roomId, err := helper.Uint(param)
@@ -130,6 +131,7 @@ func (ctrl *ChatController) GetAllParticipants(c *gin.Context) {
 	}
 	GoodResponseWithData(c, "Get Participants Success", http.StatusOK, res)
 }
+
 func (ctrl *ChatController) AddParticipants(c *gin.Context) {
 	param := c.Param("id")
 	roomId, err := helper.Uint(param)

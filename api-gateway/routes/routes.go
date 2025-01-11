@@ -39,6 +39,7 @@ func NewRoutes(ctx infra.ServiceContext) {
 	{
 		chatRoutes.GET("/:id/ws", ctx.Ctl.ChatHandler.Websocket)
 		chatRoutes.GET("/:id/messages", ctx.Ctl.ChatHandler.GetRoomMessages)
+		chatRoutes.POST("/:id/messages", ctx.Ctl.ChatHandler.NewMessage)
 		chatRoutes.GET("/:id/participants", ctx.Ctl.ChatHandler.GetAllParticipants)
 		chatRoutes.POST("/:id/participants", ctx.Ctl.ChatHandler.AddParticipants)
 	}
